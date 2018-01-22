@@ -11,7 +11,6 @@ public class TestScope {
   @Before
   public void setup() {
     InjectRepository.GLOBAL.register(Service.class, ServiceImpl.class);
-    InjectRepository.GLOBAL.register(User.class);
   }
 
   @Test
@@ -26,8 +25,5 @@ public class TestScope {
 
   @Singleton
   public static class ServiceImpl implements Service {
-  }
-
-  public static class User {
   }
 }
