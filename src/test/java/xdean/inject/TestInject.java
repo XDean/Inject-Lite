@@ -6,15 +6,20 @@ import java.util.function.IntSupplier;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestInject {
+  @Before
+  public void setup() {
+    InjectRepository.GLOBAL.register(Service.class, ServiceImpl.class);
+    InjectRepository.GLOBAL.register(User.class);
+    InjectRepository.GLOBAL.register(Manager.class);
+    InjectRepository.GLOBAL.register(IdGenerator.class);
+  }
+
   @Test
   public void test() throws Exception {
-    InjectRepository.GLOBAL.register(Service.class, ServiceImpl.class);
-    InjectRepository.GLOBAL.registerSelf(User.class);
-    InjectRepository.GLOBAL.registerSelf(Manager.class);
-    InjectRepository.GLOBAL.registerSelf(IdGenerator.class);
     User user = InjectRepository.GLOBAL.get(User.class);
     assertNotNull(user);
     assertNotNull(user.service);
@@ -42,7 +47,6 @@ public class TestInject {
   public static class User {
     @Inject
     Service service;
-
     final int id;
     Manager manager;
 

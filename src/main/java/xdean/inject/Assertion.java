@@ -14,6 +14,11 @@ public class Assertion {
     }
   }
 
+  static <T> T assertNonNull(T t, String message) {
+    assertThat(t != null, message);
+    return t;
+  }
+
   static <T> T assertTodo(Callable<T> c, String message) {
     try {
       return c.call();

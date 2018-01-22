@@ -12,13 +12,18 @@ import java.util.stream.Collectors;
 import javax.inject.Provider;
 
 import xdean.inject.model.Qualifier;
-import xdean.jex.extra.Either;
 
 public class Util {
 
   public static <T extends AnnotatedElement> List<T> annotated(T[] array, Class<? extends Annotation> annoType) {
     return Arrays.stream(array)
         .filter(t -> t.getAnnotation(annoType) != null)
+        .collect(Collectors.toList());
+  }
+
+  public static List<Annotation> annotated(Annotation[] array, Class<? extends Annotation> annoType) {
+    return Arrays.stream(array)
+        .filter(t -> t.annotationType().getAnnotation(annoType) != null)
         .collect(Collectors.toList());
   }
 

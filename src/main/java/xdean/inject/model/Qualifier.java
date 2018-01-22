@@ -7,15 +7,14 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import xdean.inject.Util;
 
 public class Qualifier {
   public static final Qualifier EMPTY = new Qualifier(Collections.emptyList());
 
   public static Qualifier from(AnnotatedElement ae) {
-    return from(Arrays.stream(ae.getAnnotations())
-        .filter(a -> a.getClass().getAnnotation(javax.inject.Qualifier.class) != null)
-        .collect(Collectors.toList()));
+    return from(Util.annotated(ae.getAnnotations(), javax.inject.Qualifier.class));
   }
 
   public static Qualifier from(List<Annotation> qualifiers) {

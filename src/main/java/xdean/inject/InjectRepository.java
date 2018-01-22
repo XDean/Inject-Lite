@@ -15,15 +15,17 @@ public class InjectRepository {
 
   public static final InjectRepository GLOBAL = new InjectRepository();
 
-  private InjectRepository parent;
   private final Map<Class<?>, TypeRepository<?>> typeRepos = new HashMap<>();
   private final List<InjectRepository> children = new LinkedList<>();
 
   private InjectRepository() {
-
   }
 
-  public <T> void registerSelf(Class<T> type) {
+  private InjectRepository(InjectRepository parent) {
+    parent.children.add(this);
+  }
+
+  public <T> void register(Class<T> type) {
     findTypeRepo(type).register(type);
   }
 
@@ -39,11 +41,11 @@ public class InjectRepository {
     return findTypeRepo(type).get(this, qualifier).orElseThrow(instanceNotFound(type));
   }
 
-  <T> Provider<T> getProvider(Class<T> type) {
+  public <T> Provider<T> getProvider(Class<T> type) {
     return findTypeRepo(type).getProvider(this).orElseThrow(instanceNotFound(type));
   }
 
-  <T> Provider<T> getProvider(Class<T> type, Qualifier qualifier) {
+  public <T> Provider<T> getProvider(Class<T> type, Qualifier qualifier) {
     return findTypeRepo(type).getProvider(this, qualifier).orElseThrow(instanceNotFound(type));
   }
 
