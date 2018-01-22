@@ -1,4 +1,4 @@
-package xdean.inject;
+package xdean.inject.model;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
@@ -13,9 +13,17 @@ public class Qualifier {
   public static final Qualifier EMPTY = new Qualifier(Collections.emptyList());
 
   public static Qualifier from(AnnotatedElement ae) {
-    return new Qualifier(Arrays.stream(ae.getAnnotations())
+    return from(Arrays.stream(ae.getAnnotations())
         .filter(a -> a.getClass().getAnnotation(javax.inject.Qualifier.class) != null)
         .collect(Collectors.toList()));
+  }
+
+  public static Qualifier from(List<Annotation> qualifiers) {
+    if (qualifiers.isEmpty()) {
+      return EMPTY;
+    } else {
+      return new Qualifier(qualifiers);
+    }
   }
 
   public final List<Annotation> qualifiers;

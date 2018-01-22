@@ -8,15 +8,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import xdean.inject.model.ConstructorWrapper;
+
 class DefaultImpl<T> implements Implementation<T> {
   final Class<? extends T> type;
-  final Constructor<? extends T> constructor;
+  final ConstructorWrapper<? extends T> constructor;
   final List<Method> methods;
   final List<Field> fields;
 
   DefaultImpl(Class<? extends T> type) {
     this.type = type;
-    this.constructor = initConstructor();
+    this.constructor = new ConstructorWrapper<>(initConstructor());
     this.methods = initMethods();
     this.fields = initFields();
   }
@@ -35,7 +37,7 @@ class DefaultImpl<T> implements Implementation<T> {
   private List<Method> initMethods() {
     List<Method> methods = Util.annotated(type.getDeclaredMethods(), Inject.class);
     for (Method method : methods) {
-      Assertion.assertThat(Modifier.isStatic(method.getModifiers()), "Not support inject static method: " + method);
+      Assertion.assertNot(Modifier.isStatic(method.getModifiers()), "Not support inject static method: " + method);
     }
     return methods;
   }
@@ -43,15 +45,14 @@ class DefaultImpl<T> implements Implementation<T> {
   private List<Field> initFields() {
     List<Field> fields = Util.annotated(type.getDeclaredFields(), Inject.class);
     for (Field field : fields) {
-      Assertion.assertThat(Modifier.isStatic(field.getModifiers()), "Not support inject static field: " + field);
-      Assertion.assertThat(Modifier.isFinal(field.getModifiers()), "Can't inject final field: " + field);
+      Assertion.assertNot(Modifier.isStatic(field.getModifiers()), "Not support inject static field: " + field);
+      Assertion.assertNot(Modifier.isFinal(field.getModifiers()), "Can't inject final field: " + field);
     }
     return fields;
   }
 
   @Override
   public T get(InjectRepository repo) {
-
-    return null;
+    return constructor.newInstance(repo);
   }
 }

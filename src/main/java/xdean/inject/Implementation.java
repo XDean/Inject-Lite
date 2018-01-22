@@ -7,6 +7,6 @@ package xdean.inject;
  *
  * @param <T>
  */
-interface Implementation<T> {
+public interface Implementation<T> {
   T get(InjectRepository repo);
 }

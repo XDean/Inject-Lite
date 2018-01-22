@@ -10,6 +10,7 @@ public class TestInject {
   @Test
   public void test() throws Exception {
     InjectRepository.GLOBAL.register(Service.class, ServiceImpl.class);
+    InjectRepository.GLOBAL.register(User.class, User.class);
     User user = InjectRepository.GLOBAL.get(User.class);
     assertNotNull(user);
     assertNotNull(user.service);
@@ -24,7 +25,7 @@ public class TestInject {
 
   }
 
-  public class User {
+  public static class User {
     @Inject
     Service service;
   }

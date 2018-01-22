@@ -1,5 +1,6 @@
 package xdean.inject;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,6 +8,9 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import javax.inject.Provider;
+
+import xdean.inject.model.Qualifier;
+import xdean.jex.util.reflect.TypeVisitor;
 
 @SuppressWarnings("unchecked")
 public class InjectRepository {

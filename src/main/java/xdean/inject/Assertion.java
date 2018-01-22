@@ -4,6 +4,10 @@ import java.util.concurrent.Callable;
 
 public class Assertion {
 
+  static void assertNot(boolean b, String message) {
+    assertThat(!b, message);
+  }
+
   static void assertThat(boolean b, String message) {
     if (!b) {
       throw new IllegalDefineException(message);

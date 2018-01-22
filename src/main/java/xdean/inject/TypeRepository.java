@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import javax.inject.Provider;
 
+import xdean.inject.model.Qualifier;
+import xdean.inject.model.QualifierWrapper;
+
 class TypeRepository<T> {
   private List<QualifierWrapper<? extends T>> impls = new LinkedList<>();
 
