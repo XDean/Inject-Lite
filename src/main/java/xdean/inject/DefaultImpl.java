@@ -5,22 +5,24 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import xdean.inject.model.ConstructorWrapper;
+import xdean.inject.model.FieldWrapper;
 
 class DefaultImpl<T> implements Implementation<T> {
   final Class<? extends T> type;
   final ConstructorWrapper<? extends T> constructor;
   final List<Method> methods;
-  final List<Field> fields;
+  final List<FieldWrapper> fields;
 
   DefaultImpl(Class<? extends T> type) {
     this.type = type;
     this.constructor = new ConstructorWrapper<>(initConstructor());
     this.methods = initMethods();
-    this.fields = initFields();
+    this.fields = initFields().stream().map(FieldWrapper::new).collect(Collectors.toList());
   }
 
   @SuppressWarnings("unchecked")
@@ -53,6 +55,8 @@ class DefaultImpl<T> implements Implementation<T> {
 
   @Override
   public T get(InjectRepository repo) {
-    return constructor.newInstance(repo);
+    T instance = constructor.newInstance(repo);
+    fields.forEach(fw->fw.process(repo, instance));
+    return instance;
   }
 }
