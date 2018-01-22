@@ -11,17 +11,18 @@ import javax.inject.Inject;
 
 import xdean.inject.model.ConstructorWrapper;
 import xdean.inject.model.FieldWrapper;
+import xdean.inject.model.MethodWrapper;
 
 class DefaultImpl<T> implements Implementation<T> {
   final Class<? extends T> type;
   final ConstructorWrapper<? extends T> constructor;
-  final List<Method> methods;
+  final List<MethodWrapper> methods;
   final List<FieldWrapper> fields;
 
   DefaultImpl(Class<? extends T> type) {
     this.type = type;
     this.constructor = new ConstructorWrapper<>(initConstructor());
-    this.methods = initMethods();
+    this.methods = initMethods().stream().map(MethodWrapper::new).collect(Collectors.toList());
     this.fields = initFields().stream().map(FieldWrapper::new).collect(Collectors.toList());
   }
 
@@ -56,7 +57,8 @@ class DefaultImpl<T> implements Implementation<T> {
   @Override
   public T get(InjectRepository repo) {
     T instance = constructor.newInstance(repo);
-    fields.forEach(fw->fw.process(repo, instance));
+    fields.forEach(f -> f.process(repo, instance));
+    methods.forEach(m -> m.process(repo, instance));
     return instance;
   }
 }

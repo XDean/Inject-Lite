@@ -1,6 +1,5 @@
 package xdean.inject;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.function.Supplier;
 import javax.inject.Provider;
 
 import xdean.inject.model.Qualifier;
-import xdean.jex.util.reflect.TypeVisitor;
 
 @SuppressWarnings("unchecked")
 public class InjectRepository {
@@ -23,6 +21,10 @@ public class InjectRepository {
 
   private InjectRepository() {
 
+  }
+
+  public <T> void registerSelf(Class<T> type) {
+    findTypeRepo(type).register(type);
   }
 
   public <T> void register(Class<T> type, Class<? extends T> impl) {

@@ -22,16 +22,16 @@ public class Util {
         .collect(Collectors.toList());
   }
 
-  public static <T> Either<T, Provider<T>> get(InjectRepository repo, Type type) {
+  public static <T> Object get(InjectRepository repo, Type type) {
     return get(repo, type, Qualifier.EMPTY);
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> Either<T, Provider<T>> get(InjectRepository repo, Type type, Qualifier qualifier) {
+  public static <T> Object get(InjectRepository repo, Type type, Qualifier qualifier) {
     if (type instanceof ParameterizedType) {
       ParameterizedType pt = (ParameterizedType) type;
       if (pt.getRawType() == Provider.class) {
-        return Either.right(repo.getProvider((Class<T>) pt.getActualTypeArguments()[0], qualifier));
+        return repo.getProvider((Class<T>) pt.getActualTypeArguments()[0], qualifier);
       } else {
         type = pt.getRawType();
       }
@@ -39,7 +39,7 @@ public class Util {
       type = ((TypeVariable<?>) type).getBounds()[0];
     }
     if (type instanceof Class) {
-      return Either.left(repo.get((Class<T>) type, qualifier));
+      return repo.get((Class<T>) type, qualifier);
     }
     throw new IllegalArgumentException();
   }
