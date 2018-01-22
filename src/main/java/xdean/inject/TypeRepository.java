@@ -2,27 +2,45 @@ package xdean.inject;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Provider;
 
 class TypeRepository<T> {
-  private final InjectRepository injectRepo;
+  private List<QualifierWrapper<? extends T>> impls = new LinkedList<>();
 
-  TypeRepository(InjectRepository injectRepository) {
-    injectRepo = injectRepository;
+  TypeRepository() {
   }
 
-  private List<Implementation> impls = new LinkedList<>();
-
-  void register(Class<? extends T> impl) {
-    impls.add(new ImplementationImpl<>(this, impl));
+  <K extends T> void register(Class<K> impl) {
+    impls.add(new QualifierWrapper<>(impl, new DefaultImpl<>(impl)));
   }
 
-  T get() {
-    return getProvider().get();
+  private boolean hasImpl(Qualifier target) {
+    return impls.stream().anyMatch(qw -> qw.match(target));
   }
 
-  Provider<T> getProvider() {
-    return null;
+  Optional<Provider<T>> getProvider(InjectRepository repo) {
+    return getProvider(repo, Qualifier.EMPTY);
+  }
+
+  Optional<Provider<T>> getProvider(InjectRepository repo, Qualifier target) {
+    if (hasImpl(target)) {
+      return Optional.of(() -> get(repo, target).get());
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  Optional<? extends T> get(InjectRepository repo) {
+    return get(repo, Qualifier.EMPTY);
+  }
+
+  public Optional<? extends T> get(InjectRepository repo, Qualifier target) {
+    return impls.stream()
+        .map(qw -> qw.get(repo, target))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .findFirst();
   }
 }

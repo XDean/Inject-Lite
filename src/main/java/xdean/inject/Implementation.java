@@ -1,5 +1,12 @@
 package xdean.inject;
 
-interface Implementation {
-
+/**
+ * For Scope
+ *
+ * @author XDean
+ *
+ * @param <T>
+ */
+interface Implementation<T> {
+  T get(InjectRepository repo);
 }
