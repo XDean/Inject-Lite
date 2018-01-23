@@ -10,13 +10,13 @@ import org.junit.Test;
 public class TestScope {
   @Before
   public void setup() {
-    InjectRepository.GLOBAL.register(Service.class, ServiceImpl.class);
+    InjectRepositoryImpl.GLOBAL.register(Service.class, ServiceImpl.class);
   }
 
   @Test
   public void testName() throws Exception {
-    Service a = InjectRepository.GLOBAL.get(Service.class);
-    Service b = InjectRepository.GLOBAL.get(Service.class);
+    Service a = InjectRepositoryImpl.GLOBAL.get(Service.class);
+    Service b = InjectRepositoryImpl.GLOBAL.get(Service.class);
     assertSame(a, b);
   }
 

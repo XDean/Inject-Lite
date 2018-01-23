@@ -45,11 +45,11 @@ class TypeRepository<T> {
     return impls.stream().anyMatch(qw -> qw.match(target));
   }
 
-  Optional<Provider<T>> getProvider(InjectRepository repo) {
+  Optional<Provider<T>> getProvider(InjectRepositoryImpl repo) {
     return getProvider(repo, Qualifier.EMPTY);
   }
 
-  Optional<Provider<T>> getProvider(InjectRepository repo, Qualifier target) {
+  Optional<Provider<T>> getProvider(InjectRepositoryImpl repo, Qualifier target) {
     if (hasImpl(target)) {
       return Optional.of(() -> get(repo, target).get());
     } else {
@@ -57,11 +57,11 @@ class TypeRepository<T> {
     }
   }
 
-  Optional<? extends T> get(InjectRepository repo) {
+  Optional<? extends T> get(InjectRepositoryImpl repo) {
     return get(repo, Qualifier.EMPTY);
   }
 
-  Optional<? extends T> get(InjectRepository repo, Qualifier target) {
+  Optional<? extends T> get(InjectRepositoryImpl repo, Qualifier target) {
     return impls.stream()
         .map(qw -> qw.get(repo, target))
         .filter(Optional::isPresent)

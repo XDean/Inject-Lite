@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import xdean.inject.InjectRepository;
+import xdean.inject.InjectRepositoryImpl;
 import xdean.inject.Util;
 import xdean.jex.extra.Pair;
 
@@ -25,7 +25,7 @@ public class ConstructorWrapper<T> {
     }
   }
 
-  public T newInstance(InjectRepository repo) {
+  public T newInstance(InjectRepositoryImpl repo) {
     Object[] params = new Object[qualifiers.size()];
     for (int i = 0; i < params.length; i++) {
       Pair<Type, Qualifier> pair = qualifiers.get(i);

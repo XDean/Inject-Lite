@@ -55,7 +55,7 @@ class DefaultImpl<T> implements Implementation<T> {
   }
 
   @Override
-  public T get(InjectRepository repo) {
+  public T get(InjectRepositoryImpl repo) {
     T instance = constructor.newInstance(repo);
     fields.forEach(f -> f.process(repo, instance));
     methods.forEach(m -> m.process(repo, instance));

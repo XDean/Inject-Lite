@@ -11,7 +11,7 @@ public class SingletonImpl<T> implements Implementation<T> {
   }
 
   @Override
-  public T get(InjectRepository repo) {
+  public T get(InjectRepositoryImpl repo) {
     if (instance.get() == null) {
       instance.compareAndSet(null, defaultImpl.get(repo));
     }

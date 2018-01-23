@@ -11,14 +11,14 @@ import org.junit.Test;
 public class TestQualifier {
   @Before
   public void setup() {
-    InjectRepository.GLOBAL.register(Service.class, ServiceImpl1.class);
-    InjectRepository.GLOBAL.register(Service.class, ServiceImpl2.class);
-    InjectRepository.GLOBAL.register(User.class);
+    InjectRepositoryImpl.GLOBAL.register(Service.class, ServiceImpl1.class);
+    InjectRepositoryImpl.GLOBAL.register(Service.class, ServiceImpl2.class);
+    InjectRepositoryImpl.GLOBAL.register(User.class);
   }
 
   @Test
   public void testNamed() throws Exception {
-    User u = InjectRepository.GLOBAL.get(User.class);
+    User u = InjectRepositoryImpl.GLOBAL.get(User.class);
     assertNotNull(u.a);
     assertTrue(u.a instanceof ServiceImpl1);
     assertNotNull(u.b);
@@ -37,11 +37,8 @@ public class TestQualifier {
   }
 
   public static class User {
-    @Inject
-    @Named("1")
-    Service a;
-    @Inject
-    @Named("2")
-    Service b;
+    private @Inject @Named("1") Service a;
+
+    public @Inject @Named("2") Service b;
   }
 }

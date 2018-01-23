@@ -12,15 +12,15 @@ import org.junit.Test;
 public class TestInject {
   @Before
   public void setup() {
-    InjectRepository.GLOBAL.register(Service.class, ServiceImpl.class);
-    InjectRepository.GLOBAL.register(User.class);
-    InjectRepository.GLOBAL.register(Manager.class);
-    InjectRepository.GLOBAL.register(IdGenerator.class);
+    InjectRepositoryImpl.GLOBAL.register(Service.class, ServiceImpl.class);
+    InjectRepositoryImpl.GLOBAL.register(User.class);
+    InjectRepositoryImpl.GLOBAL.register(Manager.class);
+    InjectRepositoryImpl.GLOBAL.register(IdGenerator.class);
   }
 
   @Test
   public void test() throws Exception {
-    User user = InjectRepository.GLOBAL.get(User.class);
+    User user = InjectRepositoryImpl.GLOBAL.get(User.class);
     assertNotNull(user);
     assertNotNull(user.service);
     assertTrue(user.service instanceof ServiceImpl);
@@ -46,7 +46,8 @@ public class TestInject {
 
   public static class User {
     @Inject
-    Service service;
+    private Service service;
+
     final int id;
     Manager manager;
 

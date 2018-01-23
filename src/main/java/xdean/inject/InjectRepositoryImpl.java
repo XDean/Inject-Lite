@@ -8,35 +8,55 @@ import java.util.function.Supplier;
 
 import javax.inject.Provider;
 
+import xdean.inject.api.InjectRepository;
 import xdean.inject.model.Qualifier;
 
 @SuppressWarnings("unchecked")
-public class InjectRepository {
+public class InjectRepositoryImpl implements InjectRepository {
 
-  public static final InjectRepository GLOBAL = new InjectRepository();
+  public static final InjectRepositoryImpl GLOBAL = new InjectRepositoryImpl();
 
   private final Map<Class<?>, TypeRepository<?>> typeRepos = new HashMap<>();
-  private final List<InjectRepository> children = new LinkedList<>();
+  private final List<InjectRepositoryImpl> children = new LinkedList<>();
 
-  private InjectRepository() {
+  private InjectRepositoryImpl() {
   }
 
-  private InjectRepository(InjectRepository parent) {
+  private InjectRepositoryImpl(InjectRepositoryImpl parent) {
     parent.children.add(this);
   }
 
+  /**
+   * Register a class into the repository
+   */
   public <T> void register(Class<T> type) {
-    findTypeRepo(type).register(type);
+    register(type, type);
   }
 
+  /**
+   * Register an implementation for a type
+   */
   public <T> void register(Class<T> type, Class<? extends T> impl) {
     findTypeRepo(type).register(impl);
   }
 
+  /**
+   * Inject fields for the given instance
+   */
+  public <T> void inject(T impl) {
+    // TODO
+  }
+
+  /**
+   * Get instance of the type
+   */
   public <T> T get(Class<T> type) {
     return findTypeRepo(type).get(this).orElseThrow(instanceNotFound(type));
   }
 
+  /**
+   * Get instance of the type with specific qualifier
+   */
   public <T> T get(Class<T> type, Qualifier qualifier) {
     return findTypeRepo(type).get(this, qualifier).orElseThrow(instanceNotFound(type));
   }

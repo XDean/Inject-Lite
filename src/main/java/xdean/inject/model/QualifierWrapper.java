@@ -3,7 +3,7 @@ package xdean.inject.model;
 import java.util.Optional;
 
 import xdean.inject.Implementation;
-import xdean.inject.InjectRepository;
+import xdean.inject.InjectRepositoryImpl;
 
 public class QualifierWrapper<T> {
 
@@ -19,7 +19,7 @@ public class QualifierWrapper<T> {
     return qualifier.match(target);
   }
 
-  public Optional<T> get(InjectRepository repo, Qualifier target) {
+  public Optional<T> get(InjectRepositoryImpl repo, Qualifier target) {
     if (this.qualifier.match(target)) {
       return Optional.of(actual.get(repo));
     } else {

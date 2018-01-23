@@ -8,5 +8,5 @@ package xdean.inject;
  * @param <T>
  */
 public interface Implementation<T> {
-  T get(InjectRepository repo);
+  T get(InjectRepositoryImpl repo);
 }

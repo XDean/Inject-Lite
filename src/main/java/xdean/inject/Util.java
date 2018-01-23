@@ -27,12 +27,12 @@ public class Util {
         .collect(Collectors.toList());
   }
 
-  public static <T> Object get(InjectRepository repo, Type type) {
+  public static <T> Object get(InjectRepositoryImpl repo, Type type) {
     return get(repo, type, Qualifier.EMPTY);
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> Object get(InjectRepository repo, Type type, Qualifier qualifier) {
+  public static <T> Object get(InjectRepositoryImpl repo, Type type, Qualifier qualifier) {
     if (type instanceof ParameterizedType) {
       ParameterizedType pt = (ParameterizedType) type;
       if (pt.getRawType() == Provider.class) {
