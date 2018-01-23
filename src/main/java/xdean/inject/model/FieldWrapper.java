@@ -5,6 +5,7 @@ import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 import java.lang.reflect.Field;
 
 import xdean.inject.InjectRepository;
+import xdean.inject.Util;
 
 public class FieldWrapper {
   private final Field field;
@@ -17,7 +18,7 @@ public class FieldWrapper {
   }
 
   public void process(InjectRepository repo, Object o) {
-    Object value = repo.get(field.getType(), qualifier);
+    Object value = Util.get(repo, field.getGenericType(), qualifier);
     uncheck(() -> field.set(o, value));
   }
 }
