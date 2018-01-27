@@ -1,4 +1,4 @@
-package xdean.inject;
+package xdean.inject.impl.old;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,11 +8,11 @@ import java.util.function.Supplier;
 
 import javax.inject.Provider;
 
-import xdean.inject.api.InjectRepository;
-import xdean.inject.model.Qualifier;
+import xdean.inject.api.BeanRepository;
+import xdean.inject.impl.old.model.Qualifier;
 
 @SuppressWarnings("unchecked")
-public class InjectRepositoryImpl implements InjectRepository {
+public class InjectRepositoryImpl {
 
   public static final InjectRepositoryImpl GLOBAL = new InjectRepositoryImpl();
 
@@ -26,9 +26,10 @@ public class InjectRepositoryImpl implements InjectRepository {
     parent.children.add(this);
   }
 
-  /**
-   * Register a class into the repository
-   */
+  public <T> void scan(Class<T> clz) {
+
+  }
+
   public <T> void register(Class<T> type) {
     register(type, type);
   }
@@ -38,13 +39,6 @@ public class InjectRepositoryImpl implements InjectRepository {
    */
   public <T> void register(Class<T> type, Class<? extends T> impl) {
     findTypeRepo(type).register(impl);
-  }
-
-  /**
-   * Inject fields for the given instance
-   */
-  public <T> void inject(T impl) {
-    // TODO
   }
 
   /**

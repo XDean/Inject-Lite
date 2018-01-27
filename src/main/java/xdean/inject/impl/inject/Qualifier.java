@@ -1,4 +1,4 @@
-package xdean.inject.model;
+package xdean.inject.impl.inject;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import xdean.inject.Util;
+import xdean.inject.impl.old.Util;
 
 public class Qualifier {
   public static final Qualifier EMPTY = new Qualifier(Collections.emptyList());

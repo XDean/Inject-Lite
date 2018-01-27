@@ -1,9 +1,9 @@
-package xdean.inject.model;
+package xdean.inject.impl.old.model;
 
 import java.util.Optional;
 
-import xdean.inject.Implementation;
-import xdean.inject.InjectRepositoryImpl;
+import xdean.inject.api.Implementation;
+import xdean.inject.impl.old.InjectRepositoryImpl;
 
 public class QualifierWrapper<T> {
 

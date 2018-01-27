@@ -1,4 +1,4 @@
-package xdean.inject;
+package xdean.inject.impl.old;
 
 import java.util.concurrent.Callable;
 

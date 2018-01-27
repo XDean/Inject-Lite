@@ -1,4 +1,4 @@
-package xdean.inject.model;
+package xdean.inject.impl.old.model;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
@@ -8,8 +8,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import xdean.inject.InjectRepositoryImpl;
-import xdean.inject.Util;
+import xdean.inject.impl.old.InjectRepositoryImpl;
+import xdean.inject.impl.old.Util;
 import xdean.jex.extra.Pair;
 
 public class ConstructorWrapper<T> {

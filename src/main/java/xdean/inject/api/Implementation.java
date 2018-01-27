@@ -1,4 +1,6 @@
-package xdean.inject;
+package xdean.inject.api;
+
+import xdean.inject.impl.old.InjectRepositoryImpl;
 
 /**
  * For Scope

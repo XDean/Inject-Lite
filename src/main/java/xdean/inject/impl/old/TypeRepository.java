@@ -1,4 +1,4 @@
-package xdean.inject;
+package xdean.inject.impl.old;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncatch;
 
@@ -11,8 +11,10 @@ import javax.inject.Provider;
 import javax.inject.Scope;
 import javax.inject.Singleton;
 
-import xdean.inject.model.Qualifier;
-import xdean.inject.model.QualifierWrapper;
+import xdean.inject.api.Implementation;
+import xdean.inject.api.annotation.ScopeHandler;
+import xdean.inject.impl.old.model.Qualifier;
+import xdean.inject.impl.old.model.QualifierWrapper;
 
 class TypeRepository<T> {
   private List<QualifierWrapper<? extends T>> impls = new LinkedList<>();

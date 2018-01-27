@@ -1,11 +1,11 @@
-package xdean.inject.model;
+package xdean.inject.impl.old.model;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
 import java.lang.reflect.Field;
 
-import xdean.inject.InjectRepositoryImpl;
-import xdean.inject.Util;
+import xdean.inject.impl.old.InjectRepositoryImpl;
+import xdean.inject.impl.old.Util;
 
 public class FieldWrapper {
   private final Field field;

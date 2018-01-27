@@ -1,6 +1,8 @@
-package xdean.inject;
+package xdean.inject.impl.old;
 
 import java.util.concurrent.atomic.AtomicReference;
+
+import xdean.inject.api.Implementation;
 
 public class SingletonImpl<T> implements Implementation<T> {
   private final DefaultImpl<T> defaultImpl;

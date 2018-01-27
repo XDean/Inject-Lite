@@ -1,4 +1,4 @@
-package xdean.inject;
+package xdean.inject.impl.old;
 
 public class IllegalDefineException extends RuntimeException {
 

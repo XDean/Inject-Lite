@@ -7,6 +7,8 @@ import javax.inject.Singleton;
 import org.junit.Before;
 import org.junit.Test;
 
+import xdean.inject.impl.old.InjectRepositoryImpl;
+
 public class TestScope {
   @Before
   public void setup() {

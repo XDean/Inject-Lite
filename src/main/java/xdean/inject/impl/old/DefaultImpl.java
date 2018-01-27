@@ -1,4 +1,4 @@
-package xdean.inject;
+package xdean.inject.impl.old;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -9,9 +9,10 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import xdean.inject.model.ConstructorWrapper;
-import xdean.inject.model.FieldWrapper;
-import xdean.inject.model.MethodWrapper;
+import xdean.inject.api.Implementation;
+import xdean.inject.impl.old.model.ConstructorWrapper;
+import xdean.inject.impl.old.model.FieldWrapper;
+import xdean.inject.impl.old.model.MethodWrapper;
 
 class DefaultImpl<T> implements Implementation<T> {
   final Class<? extends T> type;

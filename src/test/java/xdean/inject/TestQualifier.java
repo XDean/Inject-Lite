@@ -8,6 +8,8 @@ import javax.inject.Named;
 import org.junit.Before;
 import org.junit.Test;
 
+import xdean.inject.impl.old.InjectRepositoryImpl;
+
 public class TestQualifier {
   @Before
   public void setup() {
