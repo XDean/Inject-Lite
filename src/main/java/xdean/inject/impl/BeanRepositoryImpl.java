@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import javax.inject.Provider;
 
-import xdean.inject.api.BeanRepository;
+import xdean.inject.BeanRepository;
 
 public class BeanRepositoryImpl implements BeanRepository {
 

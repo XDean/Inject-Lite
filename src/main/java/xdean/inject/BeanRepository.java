@@ -1,11 +1,11 @@
-package xdean.inject.api;
+package xdean.inject;
 
 import java.util.Optional;
 
 import javax.inject.Provider;
 
-import xdean.inject.api.annotation.Bean;
-import xdean.inject.api.annotation.Scan;
+import xdean.inject.annotation.Bean;
+import xdean.inject.annotation.Scan;
 
 public interface BeanRepository {
 
