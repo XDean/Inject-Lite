@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Util {
+class Util {
 
   public static <T extends AnnotatedElement> List<T> annotated(T[] array, Class<? extends Annotation> annoType) {
     return Arrays.stream(array)

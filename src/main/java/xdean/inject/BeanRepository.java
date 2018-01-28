@@ -9,6 +9,10 @@ import xdean.inject.annotation.Scan;
 
 public interface BeanRepository {
 
+  <T> BeanRegister<T> register();
+
+  <T> BeanQuery<T> query(Class<T> beanClass);
+
   /**
    * Scan the class to register all potential beans.
    *
@@ -20,27 +24,28 @@ public interface BeanRepository {
   /**
    * Register a implementation class as the bean class
    */
-  <T> void register(Class<T> beanClz, Class<? extends T> impl);
+  default <T> void register(Class<T> beanClass, Class<? extends T> implClass) {
+    this.<T> register().implementsFor(beanClass).from(implClass);
+  }
 
   /**
    * Register a provider as the bean class
    */
-  <T> void register(Class<T> beanClz, Provider<? extends T> impl);
-
-  /**
-   * Register a bean class as it self
-   */
-  default <T> void register(Class<T> beanClz) {
-    register(beanClz, beanClz);
+  default <T> void register(Class<T> beanClass, Provider<? extends T> implProvider) {
+    this.<T> register().implementsFor(beanClass).from(implProvider);
   }
 
   /**
    * Get bean with specific type.
    */
-  <T> Optional<T> getBean(Class<T> clz);
+  default <T> Optional<T> getBean(Class<T> clz) {
+    return query(clz).get();
+  }
 
   /**
    * Get bean with specific type and name
    */
-  <T> Optional<T> getBean(Class<T> clz, String name);
+  default <T> Optional<T> getBean(Class<T> clz, String name) {
+    return query(clz).named(name).get();
+  }
 }
