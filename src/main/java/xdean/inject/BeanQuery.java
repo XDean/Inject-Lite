@@ -4,19 +4,16 @@ import java.util.Optional;
 
 import javax.inject.Provider;
 
-public interface BeanQuery<T> extends BeanConfig<T> {
+public interface BeanQuery<T> {
   default Optional<T> get() {
     return getProvider().map(p -> p.get());
   }
 
   Optional<Provider<T>> getProvider();
 
-  @Override
-  BeanQuery<T> named(String name);
+  default BeanQuery<T> named(String name) {
+    return qualifies(Qualifier.named(name));
+  }
 
-  @Override
-  BeanQuery<T> qualifies(Qualifier<? super T> qualifier);
-
-  @Override
-  BeanQuery<T> scope(Scope scope);
+  BeanQuery<T> qualifies(Qualifier qualifier);
 }

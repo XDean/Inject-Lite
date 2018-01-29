@@ -2,27 +2,55 @@ package xdean.inject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import javax.inject.Provider;
 
-public interface BeanRegister<T> extends BeanConfig<T> {
+/**
+ * Helper for register bean in repository.
+ *
+ * @author XDean
+ *
+ * @param <T>
+ */
+public interface BeanRegister<T> {
 
-  boolean from(Class<? extends T> clz);
+  /**
+   * Register bean from the class
+   */
+  <S extends T> void from(Class<S> clz) throws IllegalDefineException;
 
-  boolean from(Field field);
+  /**
+   * Register bean from the field
+   */
+  void from(Field field) throws IllegalDefineException;
 
-  boolean from(Method method);
+  /**
+   * Register bean from the method
+   */
+  void from(Method method) throws IllegalDefineException;
 
-  boolean from(Provider<? extends T> provider);
+  /**
+   * Register bean from the provider
+   */
+  <S extends T> void from(Provider<S> provider) throws IllegalDefineException;
 
   BeanRegister<T> implementsFor(Class<? super T> clz);
 
-  @Override
-  BeanRegister<T> named(String name);
+  @SuppressWarnings("unchecked")
+  default BeanRegister<T> implementsFor(Class<? super T>... classes) {
+    Arrays.stream(classes).forEach(this::implementsFor);
+    return this;
+  }
 
-  @Override
-  BeanRegister<T> qualifies(Qualifier<? super T> qualifier);
+  default BeanRegister<T> named(String name) {
+    return qualifies(Qualifier.named(name));
+  }
 
-  @Override
+  BeanRegister<T> qualifies(Qualifier qualifier);
+
+  /**
+   * Set scope of the bean, override the original scope.
+   */
   BeanRegister<T> scope(Scope scope);
 }

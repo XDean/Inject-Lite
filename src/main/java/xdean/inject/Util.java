@@ -18,7 +18,7 @@ class Util {
    * Get annotations whose class declared with specific Annotation from the
    * {@link AnnotatedElement}.
    */
-  public static List<Annotation> annotated(AnnotatedElement ae, Class<? extends Annotation> annotationOnAnnotationType) {
+  public static List<Annotation> annotatedAnnotations(AnnotatedElement ae, Class<? extends Annotation> annotationOnAnnotationType) {
     return Arrays.stream(ae.getAnnotations())
         .filter(t -> t.annotationType().getAnnotation(annotationOnAnnotationType) != null)
         .collect(Collectors.toList());

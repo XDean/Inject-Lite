@@ -4,45 +4,49 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
+import javax.inject.Named;
+
 /**
- * @param <T> the type of the input to the Qualifier
+ * @param the type of the input to the Qualifier
  * @since 0.1
  */
 @FunctionalInterface
-public interface Qualifier<T> extends Predicate<T> {
+public interface Qualifier extends Predicate<AnnotatedElement> {
+  Qualifier EMPTY = e -> true;
 
   @Override
-  boolean test(T t);
+  boolean test(AnnotatedElement ae);
 
-  default Qualifier<T> and(Qualifier<? super T> other) {
+  default Qualifier and(Qualifier other) {
     Objects.requireNonNull(other);
     return (t) -> test(t) && other.test(t);
   }
 
-  default Qualifier<T> or(Qualifier<? super T> other) {
+  default Qualifier or(Qualifier other) {
     Objects.requireNonNull(other);
     return (t) -> test(t) || other.test(t);
   }
 
   @Override
-  default Qualifier<T> negate() {
+  default Qualifier negate() {
     return (t) -> !test(t);
   }
 
-  static <T> Qualifier<T> empty() {
-    return e -> true;
-  };
-
-  static Qualifier<? extends AnnotatedElement> from(AnnotatedElement ae) {
-    List<Annotation> qualifiers = Util.annotated(ae, javax.inject.Qualifier.class);
+  static Qualifier from(AnnotatedElement ae) {
+    List<Annotation> qualifiers = Util.annotatedAnnotations(ae, javax.inject.Qualifier.class);
     if (qualifiers.isEmpty()) {
-      return empty();
+      return EMPTY;
     } else {
-      return other -> Util.annotated(other, javax.inject.Qualifier.class)
+      return other -> Util.annotatedAnnotations(other, javax.inject.Qualifier.class)
           .stream()
           .allMatch(a -> qualifiers.stream().anyMatch(anno -> a.equals(anno)));
     }
+  }
+
+  static Qualifier named(String name) {
+    return other -> Optional.ofNullable(other.getAnnotation(Named.class)).map(n -> n.value().equals(name)).orElse(false);
   }
 }
