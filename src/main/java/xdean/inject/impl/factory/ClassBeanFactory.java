@@ -2,6 +2,7 @@ package xdean.inject.impl.factory;
 
 import javax.inject.Provider;
 
+import xdean.inject.BeanRepository;
 import xdean.inject.IllegalDefineException;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
@@ -18,7 +19,7 @@ public class ClassBeanFactory<T> extends AbstractAnnotationBeanFactory<Class<T>,
   }
 
   @Override
-  public Provider<T> getProvider() {
+  public Provider<T> getProvider(BeanRepository repo) {
     // TODO
     return null;
   }

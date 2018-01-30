@@ -35,7 +35,10 @@ public interface BeanRegister<T> {
    */
   void from(Provider<T> provider) throws IllegalDefineException;
 
-  BeanRegister<T> implementsFor(Class<? super T> clz);
+  /**
+   * Register as the beanClass's implementation.
+   */
+  BeanRegister<T> implementsFor(Class<? super T> beanClass);
 
   @SuppressWarnings("unchecked")
   default BeanRegister<T> implementsFor(Class<? super T>... classes) {
@@ -44,10 +47,13 @@ public interface BeanRegister<T> {
   }
 
   default BeanRegister<T> named(String name) {
-    return qualifies(Qualifier.named(name));
+    return qualifier(Qualifier.named(name));
   }
 
-  BeanRegister<T> qualifies(Qualifier qualifier);
+  /**
+   * Add additional qualifier
+   */
+  BeanRegister<T> qualifier(Qualifier qualifier);
 
   /**
    * Set scope of the bean, override the original scope.

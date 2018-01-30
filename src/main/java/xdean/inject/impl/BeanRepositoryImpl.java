@@ -33,9 +33,7 @@ public class BeanRepositoryImpl implements BeanRepository {
     }
 
     <T> void add(Class<T> beanClass, BeanFactory<? extends T> factory) {
-      data.computeIfAbsent(beanClass,
-
-          k -> new LinkedList<>()).add(factory);
+      data.computeIfAbsent(beanClass, k -> new LinkedList<>()).add(factory);
     }
   }
 
@@ -63,7 +61,7 @@ public class BeanRepositoryImpl implements BeanRepository {
 
     private void addToRepository(BeanFactory<T> factory) {
       (beanClasses.isEmpty() ? Arrays.asList(factory.getType()) : beanClasses)
-          .forEach(c -> factories.add(c, factory));
+          .forEach(c -> factories.add(c, factory.validateImplements(c)));
     }
 
     @Override
@@ -91,7 +89,7 @@ public class BeanRepositoryImpl implements BeanRepository {
     }
 
     @Override
-    public BeanRegister<T> qualifies(Qualifier qualifier) {
+    public BeanRegister<T> qualifier(Qualifier qualifier) {
       this.qualifier = this.qualifier.and(qualifier);
       return this;
     }
