@@ -24,14 +24,14 @@ public interface BeanRepository {
   /**
    * Register a implementation class as the bean class
    */
-  default <T> void register(Class<T> beanClass, Class<? extends T> implClass) {
+  default <T> void register(Class<? super T> beanClass, Class<T> implClass) {
     this.<T> register().implementsFor(beanClass).from(implClass);
   }
 
   /**
    * Register a provider as the bean class
    */
-  default <T> void register(Class<T> beanClass, Provider<? extends T> implProvider) {
+  default <T> void register(Class<? super T> beanClass, Provider<T> implProvider) {
     this.<T> register().implementsFor(beanClass).from(implProvider);
   }
 

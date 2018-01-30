@@ -18,7 +18,7 @@ public interface BeanRegister<T> {
   /**
    * Register bean from the class
    */
-  <S extends T> void from(Class<S> clz) throws IllegalDefineException;
+  void from(Class<T> clz) throws IllegalDefineException;
 
   /**
    * Register bean from the field
@@ -33,7 +33,7 @@ public interface BeanRegister<T> {
   /**
    * Register bean from the provider
    */
-  <S extends T> void from(Provider<S> provider) throws IllegalDefineException;
+  void from(Provider<T> provider) throws IllegalDefineException;
 
   BeanRegister<T> implementsFor(Class<? super T> clz);
 
