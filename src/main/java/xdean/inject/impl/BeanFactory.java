@@ -10,6 +10,8 @@ public interface BeanFactory<T> {
 
   Qualifier getQualifier();
 
+  Class<T> getType();
+
   Provider<T> getProvider();
 
   default T get() {
@@ -17,5 +19,4 @@ public interface BeanFactory<T> {
   }
 
   Object getIdentifier();
-
 }

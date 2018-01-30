@@ -2,16 +2,44 @@ package xdean.inject.impl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.WeakHashMap;
 
 import javax.inject.Provider;
 
 import xdean.inject.BeanQuery;
 import xdean.inject.BeanRegister;
 import xdean.inject.BeanRepository;
+import xdean.inject.IllegalDefineException;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
+import xdean.inject.impl.factory.ClassBeanFactory;
+import xdean.inject.impl.factory.FieldBeanFactory;
 
 public class BeanRepositoryImpl implements BeanRepository {
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private static class BeanFactories {
+    Map<Class/* <T> */, List/* <BeanFactory<? extends T>> */> data = new WeakHashMap<>();
+
+    <T> List<BeanFactory<? extends T>> get(Class<T> beanClass) {
+      return Collections.unmodifiableList(data.getOrDefault(beanClass, Collections.emptyList()));
+    }
+
+    <T> void add(Class<T> beanClass, BeanFactory<? extends T> factory) {
+      data.computeIfAbsent(beanClass,
+
+          k -> new LinkedList<>()).add(factory);
+    }
+  }
+
+  private final BeanFactories factories = new BeanFactories();
 
   @Override
   public <T> BeanRegister<T> register() {
@@ -20,7 +48,7 @@ public class BeanRepositoryImpl implements BeanRepository {
 
   @Override
   public <T> BeanQuery<T> query(Class<T> beanClass) {
-    return null;
+    return new Query<>();
   }
 
   @Override
@@ -28,45 +56,66 @@ public class BeanRepositoryImpl implements BeanRepository {
 
   }
 
-  private static class Register<T> implements BeanRegister<T> {
+  private class Register<T> implements BeanRegister<T> {
+    private final List<Class<? super T>> beanClasses = new ArrayList<>();
+    private Qualifier qualifier = Qualifier.EMPTY;
+    private Scope scope = Scope.DEFAULT;
 
-    @Override
-    public boolean from(Class<? extends T> clz) {
-      return false;
+    private void addToRepository(BeanFactory<T> factory) {
+      (beanClasses.isEmpty() ? Arrays.asList(factory.getType()) : beanClasses)
+          .forEach(c -> factories.add(c, factory));
     }
 
     @Override
-    public boolean from(Field field) {
-      return false;
+    public void from(Class<T> clz) throws IllegalDefineException {
+      addToRepository(new ClassBeanFactory<>(clz, scope, qualifier));
     }
 
     @Override
-    public boolean from(Method method) {
-      return false;
+    public void from(Field field) throws IllegalDefineException {
+      addToRepository(new FieldBeanFactory<>(field, scope, qualifier));
     }
 
     @Override
-    public boolean from(Provider<? extends T> provider) {
-      return false;
+    public void from(Method method) throws IllegalDefineException {
+    }
+
+    @Override
+    public void from(Provider<T> provider) throws IllegalDefineException {
     }
 
     @Override
     public BeanRegister<T> implementsFor(Class<? super T> clz) {
-      return null;
+      beanClasses.add(clz);
+      return this;
     }
 
     @Override
-    public BeanRegister<T> named(String name) {
-      return null;
-    }
-
-    @Override
-    public BeanRegister<T> qualifies(Qualifier<? super T> qualifier) {
-      return null;
+    public BeanRegister<T> qualifies(Qualifier qualifier) {
+      this.qualifier = this.qualifier.and(qualifier);
+      return this;
     }
 
     @Override
     public BeanRegister<T> scope(Scope scope) {
+      this.scope = scope;
+      return this;
+    }
+  }
+
+  private class Query<T> implements BeanQuery<T> {
+    @Override
+    public Optional<Provider<T>> getProvider() {
+      return null;
+    }
+
+    @Override
+    public BeanQuery<T> named(String name) {
+      return null;
+    }
+
+    @Override
+    public BeanQuery<T> qualifies(Qualifier qualifier) {
       return null;
     }
   }
