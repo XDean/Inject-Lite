@@ -10,6 +10,11 @@ import javax.inject.Provider;
 import xdean.inject.IllegalDefineException;
 import xdean.jex.util.reflect.TypeVisitor;
 
+/**
+ * Auto transform {@code Provider<Provider<T>>} to {@code Provider<T>}
+ * 
+ * @author XDean
+ */
 @FunctionalInterface
 public interface ProviderTransformer<T> {
 

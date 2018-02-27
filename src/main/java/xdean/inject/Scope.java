@@ -13,6 +13,8 @@ import xdean.jex.util.task.tryto.Try;
 
 public interface Scope {
 
+  Scope UNDEFINED = new Scope() {
+  };
   Scope DEFAULT = new Scope() {
   };
   Scope SINGLETON = new Scope() {

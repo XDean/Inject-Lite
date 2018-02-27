@@ -4,10 +4,10 @@ import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Optional;
 
 import javax.inject.Provider;
 
+import xdean.inject.BeanNotFoundException;
 import xdean.inject.BeanRepository;
 import xdean.inject.IllegalDefineException;
 import xdean.inject.Qualifier;
@@ -27,9 +27,10 @@ public class FieldBeanFactory<T> extends AbstractAnnotationBeanFactory<Field, T>
     if (Modifier.isStatic(element.getModifiers())) {
       return uncheck(() -> element.get(null));
     } else {
-      Optional<?> owner = repo.getBean(element.getDeclaringClass());
+      Class<?> declaringClass = element.getDeclaringClass();
+      Object owner = repo.getBean(declaringClass).orElseThrow(() -> new BeanNotFoundException(repo, declaringClass));
+      return uncheck(() -> element.get(owner));
     }
-    return null;
   }
 
   @Override

@@ -15,7 +15,7 @@ public abstract class AbstractAnnotationBeanFactory<A extends AnnotatedElement, 
   public AbstractAnnotationBeanFactory(A element, Scope scope, Qualifier qualifier)
       throws IllegalDefineException {
     this.element = element;
-    this.scope = scope == Scope.DEFAULT ? Scope.from(element) : scope;
+    this.scope = scope == Scope.UNDEFINED ? Scope.from(element) : scope;
     this.qualifier = Qualifier.from(element).and(qualifier);
   }
 

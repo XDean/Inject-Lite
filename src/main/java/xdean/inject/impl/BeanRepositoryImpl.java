@@ -57,7 +57,7 @@ public class BeanRepositoryImpl implements BeanRepository {
   private class Register<T> implements BeanRegister<T> {
     private final List<Class<? super T>> beanClasses = new ArrayList<>();
     private Qualifier qualifier = Qualifier.EMPTY;
-    private Scope scope = Scope.DEFAULT;
+    private Scope scope = Scope.UNDEFINED;
 
     private void addToRepository(BeanFactory<T> factory) {
       (beanClasses.isEmpty() ? Arrays.asList(factory.getType()) : beanClasses)
