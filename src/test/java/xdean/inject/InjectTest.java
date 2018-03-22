@@ -19,6 +19,10 @@ public class InjectTest {
   @Before
   public void setup() {
     repo = new BeanRepositoryImpl();
+    repo.register(Service.class, ServiceImpl.class);
+    repo.register(IntSupplier.class, IdGenerator.class);
+    repo.register(Manager.class);
+    repo.register(User.class);
   }
 
   @Test
@@ -55,8 +59,8 @@ public class InjectTest {
     Manager manager;
 
     @Inject
-    public User(IdGenerator idGenerator) {
-      id = idGenerator.getAsInt();
+    public User(IntSupplier is) {
+      id = is.getAsInt();
     }
 
     @Inject

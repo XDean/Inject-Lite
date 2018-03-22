@@ -22,6 +22,13 @@ public interface BeanRepository {
   <T> void scan(Class<T> clz);
 
   /**
+   * Register a bean class as itself's implementation.
+   */
+  default <T> void register(Class<T> beanClass) {
+    this.<T> register(beanClass, beanClass);
+  }
+
+  /**
    * Register a implementation class as the bean class
    */
   default <T> void register(Class<? super T> beanClass, Class<T> implClass) {
