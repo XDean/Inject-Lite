@@ -1,6 +1,6 @@
 package xdean.inject.impl.factory;
 
-import static xdean.inject.BeanNotFoundException.notFound;
+import static xdean.inject.exception.BeanNotFoundException.notFound;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
@@ -15,6 +15,10 @@ import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 
 class Util {
+
+  static Error never(Throwable e) {
+    return new Error("This never happen. Contact author.", e);
+  }
 
   static Object[] prepareArgument(Executable element, BeanRepository repo) {
     Parameter[] parameters = element.getParameters();

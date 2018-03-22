@@ -1,11 +1,14 @@
 package xdean.inject.impl.factory;
 
-import static xdean.inject.IllegalDefineException.assertNot;
-import static xdean.inject.IllegalDefineException.assertThat;
+import static xdean.inject.exception.BeanNotFoundException.notFound;
+import static xdean.inject.exception.IllegalDefineException.assertNot;
+import static xdean.inject.exception.IllegalDefineException.assertThat;
+import static xdean.jex.util.function.FunctionAdapter.function;
 import static xdean.jex.util.lang.ExceptionUtil.throwIt;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -16,9 +19,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import xdean.inject.BeanRepository;
-import xdean.inject.IllegalDefineException;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
+import xdean.inject.exception.IllegalDefineException;
+import xdean.inject.exception.InjectException;
 import xdean.jex.extra.tryto.Try;
 import xdean.jex.util.reflect.ReflectUtil;
 
@@ -60,6 +64,7 @@ public class ClassBeanFactory<T> extends AbstractAnnotationBeanFactory<Class<T>,
 
   public ClassBeanFactory(Class<T> element, Scope scope, Qualifier qualifier) throws IllegalDefineException {
     super(element, scope, qualifier);
+    assertNot(Modifier.isAbstract(element.getModifiers()), "Bean can't be abstract: " + element);
     this.constructor = initConstructor();
     this.fields = initFields();
     this.methods = initMethods();
@@ -81,17 +86,20 @@ public class ClassBeanFactory<T> extends AbstractAnnotationBeanFactory<Class<T>,
         .filter(c -> c.isAnnotationPresent(Inject.class))
         .collect(Collectors.toList());
     assertThat(injects.size() < 2, "Bean class can't have more than 1 @Inject constructor: " + element);
-    return (Constructor<T>) injects.stream()
+    Constructor<?> constructor = injects.stream()
         .findFirst()
         .orElseGet(() -> Try.to(() -> element.getDeclaredConstructor())
             .getOrElse(() -> throwIt(new IllegalDefineException(
                 "Bean class has no @Inject constructor neither no-arg constructor: " + element))));
+    constructor.setAccessible(true);
+    return (Constructor<T>) constructor;
   }
 
   private List<Field> initFields() throws IllegalDefineException {
     return Arrays.stream(ReflectUtil.getAllFields(element, false))
         .filter(f -> f.isAnnotationPresent(Inject.class))
         .map(f -> assertNot(f, Modifier.isFinal(f.getModifiers()), "@Inject field can't be final: " + f))
+        .map(function(f -> f.setAccessible(true)))
         .collect(Collectors.toList());
   }
 
@@ -99,10 +107,38 @@ public class ClassBeanFactory<T> extends AbstractAnnotationBeanFactory<Class<T>,
     return Util.getTopInstanceMethods(element)
         .stream()
         .filter(m -> m.isAnnotationPresent(Inject.class))
+        .map(function(f -> f.setAccessible(true)))
         .collect(Collectors.toList());
   }
 
   private T construct(BeanRepository repo) {
-    return null;
+    T obj;
+    try {
+      Object[] args = Util.prepareArgument(constructor, repo);
+      obj = constructor.newInstance(args);
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+      throw Util.never(e);
+    } catch (InvocationTargetException e) {
+      throw new InjectException("Error happened when construct bean: " + element, e.getTargetException());
+    }
+    fields.forEach(f -> {
+      Object value = repo.query(f.getType()).qualifies(Qualifier.from(f)).get().orElseThrow(notFound(repo, f.getType()));
+      try {
+        f.set(obj, value);
+      } catch (IllegalArgumentException | IllegalAccessException e) {
+        throw Util.never(e);
+      }
+    });
+    methods.forEach(m -> {
+      Object[] args = Util.prepareArgument(m, repo);
+      try {
+        m.invoke(obj, args);
+      } catch (IllegalAccessException | IllegalArgumentException e) {
+        throw Util.never(e);
+      } catch (InvocationTargetException e) {
+        throw new InjectException("Error happended when invoke inject method: " + m, e.getTargetException());
+      }
+    });
+    return obj;
   }
 }
