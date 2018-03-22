@@ -3,9 +3,9 @@ package xdean.inject.impl;
 import javax.inject.Provider;
 
 import xdean.inject.BeanRepository;
-import xdean.inject.IllegalDefineException;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
+import xdean.inject.exception.IllegalDefineException;
 
 public interface BeanFactory<T> {
   Scope getScope();

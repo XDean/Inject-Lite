@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 
 import javax.inject.Provider;
 
-import xdean.inject.IllegalDefineException;
+import xdean.inject.exception.IllegalDefineException;
 import xdean.jex.extra.collection.Pair;
 import xdean.jex.util.reflect.TypeVisitor;
 

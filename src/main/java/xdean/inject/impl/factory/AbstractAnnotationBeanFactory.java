@@ -2,9 +2,9 @@ package xdean.inject.impl.factory;
 
 import java.lang.reflect.AnnotatedElement;
 
-import xdean.inject.IllegalDefineException;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
+import xdean.inject.exception.IllegalDefineException;
 import xdean.inject.impl.BeanFactory;
 
 public abstract class AbstractAnnotationBeanFactory<A extends AnnotatedElement, T> implements BeanFactory<T> {

@@ -1,6 +1,6 @@
 package xdean.inject.impl.factory;
 
-import static xdean.inject.BeanNotFoundException.notFound;
+import static xdean.inject.exception.BeanNotFoundException.notFound;
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
 import java.lang.reflect.Method;
@@ -9,9 +9,9 @@ import java.lang.reflect.Modifier;
 import javax.inject.Provider;
 
 import xdean.inject.BeanRepository;
-import xdean.inject.IllegalDefineException;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
+import xdean.inject.exception.IllegalDefineException;
 import xdean.jex.extra.collection.Pair;
 
 public class MethodBeanFactory<T> extends AbstractAnnotationBeanFactory<Method, T> {

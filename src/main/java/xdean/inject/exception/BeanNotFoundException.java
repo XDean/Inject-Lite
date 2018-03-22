@@ -1,6 +1,9 @@
-package xdean.inject;
+package xdean.inject.exception;
 
 import java.util.function.Supplier;
+
+import xdean.inject.BeanRepository;
+import xdean.inject.Qualifier;
 
 public class BeanNotFoundException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package xdean.inject;
+package xdean.inject.exception;
 
 import java.util.concurrent.Callable;
 

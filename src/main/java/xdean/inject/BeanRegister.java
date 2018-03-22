@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import javax.inject.Provider;
 
+import xdean.inject.exception.IllegalDefineException;
+
 /**
  * Helper for register bean in repository.
  *

@@ -8,6 +8,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import xdean.inject.annotation.ScopeHandler;
+import xdean.inject.exception.IllegalDefineException;
 import xdean.jex.extra.LazyValue;
 import xdean.jex.extra.tryto.Try;
 
