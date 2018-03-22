@@ -1,4 +1,4 @@
-package xdean.inject;
+package xdean.inject.old;
 
 import static org.junit.Assert.*;
 
