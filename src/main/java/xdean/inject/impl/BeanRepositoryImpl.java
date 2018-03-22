@@ -1,14 +1,16 @@
 package xdean.inject.impl;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.inject.Provider;
@@ -18,6 +20,7 @@ import xdean.inject.BeanRegister;
 import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
+import xdean.inject.annotation.Bean;
 import xdean.inject.exception.IllegalDefineException;
 import xdean.inject.impl.factory.ClassBeanFactory;
 import xdean.inject.impl.factory.FieldBeanFactory;
@@ -61,7 +64,7 @@ public class BeanRepositoryImpl implements BeanRepository {
   }
 
   private class Register<T> implements BeanRegister<T> {
-    private final List<Class<? super T>> beanClasses = new ArrayList<>();
+    private final Set<Class<? super T>> beanClasses = new HashSet<>();
     private Qualifier qualifier = Qualifier.EMPTY;
     private Scope scope = Scope.UNDEFINED;
 
@@ -70,19 +73,45 @@ public class BeanRepositoryImpl implements BeanRepository {
           .forEach(c -> factories.addFactory(c, factory.validateImplements(c)));
     }
 
+    @SuppressWarnings("unchecked")
+    private void autoImpl(BeanFactory<T> factory, AnnotatedElement ae) {
+      Bean anno = ae.getAnnotation(Bean.class);
+      if (anno == null) {
+        return;
+      }
+      Set<Class<?>> set = new HashSet<>();
+      Collections.addAll(set, anno.value());
+      if (anno.implSuperClass()) {
+        set.add(factory.getType().getSuperclass());
+      }
+      if (anno.implAllInterfaces()) {
+        Collections.addAll(set, factory.getType().getInterfaces());
+      }
+      set.forEach(c -> {
+        factory.validateImplements(c);
+        implementsFor((Class<? super T>) c);
+      });
+    }
+
     @Override
     public void from(Class<T> clz) throws IllegalDefineException {
-      addToRepository(new ClassBeanFactory<>(clz, scope, qualifier));
+      BeanFactory<T> factory = new ClassBeanFactory<>(clz, scope, qualifier);
+      autoImpl(factory, clz);
+      addToRepository(factory);
     }
 
     @Override
     public void from(Field field) throws IllegalDefineException {
-      addToRepository(new FieldBeanFactory<>(field, scope, qualifier));
+      BeanFactory<T> factory = new FieldBeanFactory<>(field, scope, qualifier);
+      autoImpl(factory, field);
+      addToRepository(factory);
     }
 
     @Override
     public void from(Method method) throws IllegalDefineException {
-      addToRepository(new MethodBeanFactory<>(method, scope, qualifier));
+      BeanFactory<T> factory = new MethodBeanFactory<>(method, scope, qualifier);
+      autoImpl(factory, method);
+      addToRepository(factory);
     }
 
     @Override

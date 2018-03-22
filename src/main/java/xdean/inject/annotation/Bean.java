@@ -7,8 +7,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.inject.Scope;
-
 import xdean.inject.BeanRepository;
 
 /**
@@ -21,7 +19,6 @@ import xdean.inject.BeanRepository;
  * @author XDean
  * @since 0.1
  */
-@Scope
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)
@@ -43,4 +40,8 @@ public @interface Bean {
    * </pre>
    */
   Class<?>[] value() default {};
+
+  boolean implSuperClass() default false;
+
+  boolean implAllInterfaces() default false;
 }

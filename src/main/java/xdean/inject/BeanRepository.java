@@ -2,8 +2,6 @@ package xdean.inject;
 
 import java.util.Optional;
 
-import javax.inject.Provider;
-
 import xdean.inject.annotation.Bean;
 import xdean.inject.annotation.Scan;
 
@@ -22,10 +20,10 @@ public interface BeanRepository {
   <T> void scan(Class<T> clz);
 
   /**
-   * Register a bean class as itself's implementation.
+   * Register a bean class
    */
   default <T> void register(Class<T> beanClass) {
-    this.<T> register(beanClass, beanClass);
+    this.<T> register().from(beanClass);
   }
 
   /**
@@ -33,13 +31,6 @@ public interface BeanRepository {
    */
   default <T> void register(Class<? super T> beanClass, Class<T> implClass) {
     this.<T> register().implementsFor(beanClass).from(implClass);
-  }
-
-  /**
-   * Register a provider as the bean class
-   */
-  default <T> void register(Class<? super T> beanClass, Provider<T> implProvider) {
-    this.<T> register().implementsFor(beanClass).from(implProvider);
   }
 
   /**

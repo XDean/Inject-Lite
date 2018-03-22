@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 
+import xdean.inject.annotation.Bean;
 import xdean.inject.impl.BeanRepositoryImpl;
 
 public class InjectTest {
@@ -19,8 +20,8 @@ public class InjectTest {
   @Before
   public void setup() {
     repo = new BeanRepositoryImpl();
-    repo.register(Service.class, ServiceImpl.class);
-    repo.register(IntSupplier.class, IdGenerator.class);
+    repo.register(ServiceImpl.class);
+    repo.register(IdGenerator.class);
     repo.register(Manager.class);
     repo.register(User.class);
   }
@@ -38,9 +39,11 @@ public class InjectTest {
   public interface Service {
   }
 
+  @Bean(Service.class)
   public static class ServiceImpl implements Service {
   }
 
+  @Bean(IntSupplier.class)
   public static class IdGenerator implements IntSupplier {
     @Override
     public int getAsInt() {
@@ -48,6 +51,7 @@ public class InjectTest {
     }
   }
 
+  @Bean
   public static class Manager {
   }
 
