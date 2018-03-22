@@ -82,6 +82,7 @@ public class BeanRepositoryImpl implements BeanRepository {
 
     @Override
     public void from(Provider<T> provider) throws IllegalDefineException {
+      throw new UnsupportedOperationException();
     }
 
     @Override
