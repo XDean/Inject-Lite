@@ -21,6 +21,7 @@ import xdean.inject.Qualifier;
 import xdean.inject.Scope;
 import xdean.inject.impl.factory.ClassBeanFactory;
 import xdean.inject.impl.factory.FieldBeanFactory;
+import xdean.inject.impl.factory.MethodBeanFactory;
 
 public class BeanRepositoryImpl implements BeanRepository {
 
@@ -76,6 +77,7 @@ public class BeanRepositoryImpl implements BeanRepository {
 
     @Override
     public void from(Method method) throws IllegalDefineException {
+      addToRepository(new MethodBeanFactory<>(method, scope, qualifier));
     }
 
     @Override

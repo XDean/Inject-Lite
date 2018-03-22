@@ -12,15 +12,29 @@ import xdean.inject.BeanRepository;
 import xdean.inject.IllegalDefineException;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
+import xdean.jex.extra.Pair;
 
 public class FieldBeanFactory<T> extends AbstractAnnotationBeanFactory<Field, T> {
 
   private final ProviderTransformer<T> providerTransformer;
+  private final Class<T> type;
 
   public FieldBeanFactory(Field element, Scope scope, Qualifier qualifier) throws IllegalDefineException {
     super(element, scope, qualifier);
     element.setAccessible(true);
-    providerTransformer = ProviderTransformer.<T> from(element.getGenericType(), Object.class, element);
+    Pair<Class<T>, ProviderTransformer<T>> pair = ProviderTransformer.<T> from(element.getGenericType(), Object.class, element);
+    type = pair.getLeft();
+    providerTransformer = pair.getRight();
+  }
+
+  @Override
+  public Class<T> getType() {
+    return type;
+  }
+
+  @Override
+  public Provider<T> getProvider(BeanRepository repo) {
+    return providerTransformer.transform(() -> getFieldValue(repo));
   }
 
   private Object getFieldValue(BeanRepository repo) {
@@ -31,16 +45,5 @@ public class FieldBeanFactory<T> extends AbstractAnnotationBeanFactory<Field, T>
       Object owner = repo.getBean(declaringClass).orElseThrow(() -> new BeanNotFoundException(repo, declaringClass));
       return uncheck(() -> element.get(owner));
     }
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public Class<T> getType() {
-    return (Class<T>) element.getType();
-  }
-
-  @Override
-  public Provider<T> getProvider(BeanRepository repo) {
-    return providerTransformer.transform(() -> getFieldValue(repo));
   }
 }

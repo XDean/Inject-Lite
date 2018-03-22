@@ -8,18 +8,19 @@ import java.lang.reflect.Type;
 import javax.inject.Provider;
 
 import xdean.inject.IllegalDefineException;
+import xdean.jex.extra.Pair;
 import xdean.jex.util.reflect.TypeVisitor;
 
 /**
  * Auto transform {@code Provider<Provider<T>>} to {@code Provider<T>}
- * 
+ *
  * @author XDean
  */
 @FunctionalInterface
 public interface ProviderTransformer<T> {
 
   @SuppressWarnings("unchecked")
-  static <T> ProviderTransformer<T> from(Type declaredType, Class<? super T> target, Object definedObject) {
+  static <T> Pair<Class<T>, ProviderTransformer<T>> from(Type declaredType, Class<? super T> target, Object definedObject) {
     Type actualType;
     boolean provider = false;
     if (declaredType instanceof ParameterizedType) {
@@ -34,13 +35,13 @@ public interface ProviderTransformer<T> {
     } else {
       actualType = declaredType;
     }
-    Class<?> clz = TypeVisitor.<Class<?>> create(actualType)
+    Class<T> clz = (Class<T>) TypeVisitor.<Class<?>> create(actualType)
         .onClass(c -> c)
         .onParameterizedType(pt -> (Class<?>) pt.getRawType())
         .result(() -> throwIt(new IllegalDefineException("Bean for T must defined as T or Provider<T>: " + definedObject)));
     IllegalDefineException.assertThat(target.isAssignableFrom(clz),
         "Can't convert from " + clz + " to " + target + ": " + definedObject);
-    return provider ? p -> (Provider<T>) p.get() : p -> (Provider<T>) p;
+    return Pair.of(clz, provider ? p -> (Provider<T>) p.get() : p -> (Provider<T>) p);
   }
 
   Provider<T> transform(Provider<?> p);
