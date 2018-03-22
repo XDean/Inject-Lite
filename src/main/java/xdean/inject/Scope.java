@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 
 import xdean.inject.annotation.ScopeHandler;
 import xdean.jex.extra.LazyValue;
-import xdean.jex.util.task.tryto.Try;
+import xdean.jex.extra.tryto.Try;
 
 public interface Scope {
 

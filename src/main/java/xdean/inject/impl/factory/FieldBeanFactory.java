@@ -12,7 +12,7 @@ import xdean.inject.BeanRepository;
 import xdean.inject.IllegalDefineException;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
-import xdean.jex.extra.Pair;
+import xdean.jex.extra.collection.Pair;
 
 public class FieldBeanFactory<T> extends AbstractAnnotationBeanFactory<Field, T> {
 

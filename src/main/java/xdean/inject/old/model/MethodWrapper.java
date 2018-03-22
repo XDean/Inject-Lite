@@ -10,7 +10,7 @@ import java.util.List;
 
 import xdean.inject.old.InjectRepositoryImpl;
 import xdean.inject.old.Util;
-import xdean.jex.extra.Pair;
+import xdean.jex.extra.collection.Pair;
 
 public class MethodWrapper {
   private final Method method;
