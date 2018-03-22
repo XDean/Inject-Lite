@@ -30,6 +30,15 @@ public class IllegalDefineException extends RuntimeException {
     }
   }
 
+  public static <T> T assertNot(T t, boolean b, String message) {
+    return assertThat(t, !b, message);
+  }
+
+  public static <T> T assertThat(T t, boolean b, String message) {
+    assertThat(b, message);
+    return t;
+  }
+
   public static <T> T assertNonNull(T t, String message) {
     assertThat(t != null, message);
     return t;

@@ -1,5 +1,6 @@
 package xdean.inject.impl.factory;
 
+import static xdean.inject.IllegalDefineException.assertThat;
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
 import java.lang.reflect.Field;
@@ -25,6 +26,9 @@ public class FieldBeanFactory<T> extends AbstractAnnotationBeanFactory<Field, T>
     Pair<Class<T>, ProviderTransformer<T>> pair = ProviderTransformer.<T> from(element.getGenericType(), Object.class, element);
     type = pair.getLeft();
     providerTransformer = pair.getRight();
+    if (providerTransformer == ProviderTransformer.FOR_INSTANCE) {
+      assertThat(scope == Scope.UNDEFINED, "Field bean can't define @Scope: " + element);
+    }
   }
 
   @Override

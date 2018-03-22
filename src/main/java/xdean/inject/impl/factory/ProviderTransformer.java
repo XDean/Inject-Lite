@@ -17,7 +17,11 @@ import xdean.jex.util.reflect.TypeVisitor;
  * @author XDean
  */
 @FunctionalInterface
+@SuppressWarnings("rawtypes")
 public interface ProviderTransformer<T> {
+
+  ProviderTransformer FOR_INSTANCE = p -> p;
+  ProviderTransformer FOR_PROVIDER = p -> (Provider<?>) p.get();
 
   @SuppressWarnings("unchecked")
   static <T> Pair<Class<T>, ProviderTransformer<T>> from(Type declaredType, Class<? super T> target, Object definedObject) {
@@ -41,7 +45,7 @@ public interface ProviderTransformer<T> {
         .result(() -> throwIt(new IllegalDefineException("Bean for T must defined as T or Provider<T>: " + definedObject)));
     IllegalDefineException.assertThat(target.isAssignableFrom(clz),
         "Can't convert from " + clz + " to " + target + ": " + definedObject);
-    return Pair.of(clz, provider ? p -> (Provider<T>) p.get() : p -> (Provider<T>) p);
+    return Pair.of(clz, provider ? FOR_PROVIDER : FOR_INSTANCE);
   }
 
   Provider<T> transform(Provider<?> p);

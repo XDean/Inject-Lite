@@ -5,7 +5,6 @@ import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 
 import javax.inject.Provider;
 
@@ -38,11 +37,11 @@ public class MethodBeanFactory<T> extends AbstractAnnotationBeanFactory<Method, 
 
   @Override
   public Provider<T> getProvider(BeanRepository repo) {
-    return providerTransformer.transform(() -> getMethodValue(repo));
+    return scope.transform(providerTransformer.transform(() -> getMethodValue(repo)));
   }
 
   private Object getMethodValue(BeanRepository repo) {
-    Object[] args = prepareArgument(repo);
+    Object[] args = Util.prepareArgument(element, repo);
     if (Modifier.isStatic(element.getModifiers())) {
       return uncheck(() -> element.invoke(null, args));
     } else {
@@ -50,17 +49,5 @@ public class MethodBeanFactory<T> extends AbstractAnnotationBeanFactory<Method, 
       Object owner = repo.getBean(declaringClass).orElseThrow(notFound(repo, declaringClass));
       return uncheck(() -> element.invoke(owner, args));
     }
-  }
-
-  private Object[] prepareArgument(BeanRepository repo) {
-    Parameter[] parameters = element.getParameters();
-    Object[] params = new Object[element.getParameterCount()];
-    for (int i = 0; i < params.length; i++) {
-      Parameter p = parameters[i];
-      Qualifier q = Qualifier.from(p);
-      Object o = repo.query(p.getType()).qualifies(q).get().orElseThrow(notFound(repo, p.getType(), q));
-      params[i] = o;
-    }
-    return params;
   }
 }
