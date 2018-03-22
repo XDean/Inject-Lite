@@ -26,15 +26,20 @@ import xdean.inject.impl.factory.MethodBeanFactory;
 public class BeanRepositoryImpl implements BeanRepository {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  private static class BeanFactories {
-    Map<Class/* <T> */, List/* <BeanFactory<? extends T>> */> data = new WeakHashMap<>();
+  private class BeanFactories {
+    Map<Class/* <T> */, List/* <BeanFactory<? extends T>> */> factories = new WeakHashMap<>();
+    Map<BeanFactory/* <T> */, Provider/* <T> */> providers = new WeakHashMap<>();
 
-    <T> List<BeanFactory<? extends T>> get(Class<T> beanClass) {
-      return Collections.unmodifiableList(data.getOrDefault(beanClass, Collections.emptyList()));
+    <T> List<BeanFactory<? extends T>> getFactory(Class<T> beanClass) {
+      return Collections.unmodifiableList(factories.getOrDefault(beanClass, Collections.emptyList()));
     }
 
-    <T> void add(Class<T> beanClass, BeanFactory<? extends T> factory) {
-      data.computeIfAbsent(beanClass, k -> new LinkedList<>()).add(factory);
+    <T> void addFactory(Class<T> beanClass, BeanFactory<? extends T> factory) {
+      factories.computeIfAbsent(beanClass, k -> new LinkedList<>()).add(factory);
+    }
+
+    <T> Provider<T> getProvider(BeanFactory<T> factory) {
+      return providers.computeIfAbsent(factory, f -> f.getProvider(BeanRepositoryImpl.this));
     }
   }
 
@@ -47,7 +52,7 @@ public class BeanRepositoryImpl implements BeanRepository {
 
   @Override
   public <T> BeanQuery<T> query(Class<T> beanClass) {
-    return new Query<>();
+    return new Query<>(beanClass);
   }
 
   @Override
@@ -62,7 +67,7 @@ public class BeanRepositoryImpl implements BeanRepository {
 
     private void addToRepository(BeanFactory<T> factory) {
       (beanClasses.isEmpty() ? Arrays.asList(factory.getType()) : beanClasses)
-          .forEach(c -> factories.add(c, factory.validateImplements(c)));
+          .forEach(c -> factories.addFactory(c, factory.validateImplements(c)));
     }
 
     @Override
@@ -105,19 +110,26 @@ public class BeanRepositoryImpl implements BeanRepository {
   }
 
   private class Query<T> implements BeanQuery<T> {
-    @Override
-    public Optional<Provider<T>> getProvider() {
-      return null;
+    private Qualifier qualifier = Qualifier.EMPTY;
+    private final Class<T> clz;
+
+    public Query(Class<T> clz) {
+      this.clz = clz;
     }
 
     @Override
-    public BeanQuery<T> named(String name) {
-      return null;
+    public Optional<Provider<? extends T>> getProvider() {
+      return factories.getFactory(clz)
+          .stream()
+          .filter(f -> f.getQualifier().match(qualifier))
+          .findFirst()
+          .<Provider<? extends T>> map(f -> factories.getProvider(f));
     }
 
     @Override
     public BeanQuery<T> qualifies(Qualifier qualifier) {
-      return null;
+      this.qualifier = this.qualifier.and(qualifier);
+      return this;
     }
   }
 }

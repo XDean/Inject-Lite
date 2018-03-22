@@ -38,14 +38,14 @@ public interface BeanRepository {
   /**
    * Get bean with specific type.
    */
-  default <T> Optional<T> getBean(Class<T> clz) {
+  default <T> Optional<? extends T> getBean(Class<T> clz) {
     return query(clz).get();
   }
 
   /**
    * Get bean with specific type and name
    */
-  default <T> Optional<T> getBean(Class<T> clz, String name) {
+  default <T> Optional<? extends T> getBean(Class<T> clz, String name) {
     return query(clz).named(name).get();
   }
 }
