@@ -2,9 +2,6 @@ package xdean.inject;
 
 import java.util.Optional;
 
-import xdean.inject.annotation.Bean;
-import xdean.inject.annotation.Scan;
-
 public interface BeanRepository {
 
   BeanRepository autoRegister(boolean auto);
@@ -14,12 +11,14 @@ public interface BeanRepository {
   <T> BeanQuery<T> query(Class<T> beanClass);
 
   /**
-   * Scan the class to register all potential beans.
-   *
-   * @see Scan
-   * @see Bean
+   * Scan the class to register all potential beans and configuration.
    */
   <T> void scan(Class<T> clz);
+
+  /**
+   * Scan the package to register all potential beans and configuration.
+   */
+  <T> void scan(String... packages);
 
   /**
    * Register a bean class

@@ -76,6 +76,11 @@ public class BeanRepositoryImpl implements BeanRepository {
 
   }
 
+  @Override
+  public <T> void scan(String... packages) {
+
+  }
+
   private class Register<T> implements BeanRegister<T> {
     private final Set<Class<? super T>> beanClasses = new HashSet<>();
     private Qualifier qualifier = Qualifier.EMPTY;
