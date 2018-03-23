@@ -1,10 +1,22 @@
 package xdean.inject;
 
 import java.util.Optional;
+import java.util.function.Consumer;
+
+import xdean.inject.annotation.Config;
 
 public interface BeanRepository {
+  /**
+   * Configure this repository by annotation
+   *
+   * @see Config
+   */
+  BeanRepository config(Class<?> config);
 
-  BeanRepository autoRegister(boolean auto);
+  /**
+   * Configure this repository
+   */
+  BeanRepository config(Consumer<BeanRepositoryConfig> config);
 
   <T> BeanRegister<T> register();
 
@@ -13,25 +25,27 @@ public interface BeanRepository {
   /**
    * Scan the class to register all potential beans and configuration.
    */
-  <T> void scan(Class<T> clz);
+  BeanRepository scan(Class<?> clz);
 
   /**
    * Scan the package to register all potential beans and configuration.
    */
-  <T> void scan(String... packages);
+  BeanRepository scan(String... packages);
 
   /**
    * Register a bean class
    */
-  default <T> void register(Class<T> beanClass) {
+  default <T> BeanRepository register(Class<T> beanClass) {
     this.<T> register().from(beanClass);
+    return this;
   }
 
   /**
    * Register a implementation class as the bean class
    */
-  default <T> void register(Class<? super T> beanClass, Class<T> implClass) {
+  default <T> BeanRepository register(Class<? super T> beanClass, Class<T> implClass) {
     this.<T> register().implementsFor(beanClass).from(implClass);
+    return this;
   }
 
   /**
