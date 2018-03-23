@@ -14,21 +14,26 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.function.Consumer;
 
 import javax.inject.Provider;
 
+import io.reactivex.Flowable;
 import xdean.inject.BeanQuery;
 import xdean.inject.BeanRegister;
 import xdean.inject.BeanRepository;
+import xdean.inject.BeanRepositoryConfig;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
 import xdean.inject.annotation.Bean;
+import xdean.inject.annotation.Scan;
 import xdean.inject.exception.IllegalDefineException;
 import xdean.inject.impl.factory.ClassBeanFactory;
 import xdean.inject.impl.factory.FieldBeanFactory;
 import xdean.inject.impl.factory.MethodBeanFactory;
+import xdean.jex.log.Logable;
 
-public class BeanRepositoryImpl implements BeanRepository {
+public class BeanRepositoryImpl implements BeanRepository, Logable {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private class BeanFactories {
@@ -48,13 +53,20 @@ public class BeanRepositoryImpl implements BeanRepository {
     }
   }
 
-  private final Map<Class<?>, ?> queried = new WeakHashMap<>();
+  private final BeanRepositoryConfigImpl config = new BeanRepositoryConfigImpl();
+  private final Map<Class<?>, Object> scaned = new WeakHashMap<>();
   private final BeanFactories factories = new BeanFactories();
-  private boolean autoRegister = true;
 
   @Override
-  public BeanRepository autoRegister(boolean auto) {
-    autoRegister = auto;
+  public BeanRepository config(Class<?> config) {
+    debug("Read config from: " + config);
+    // TODO
+    return this;
+  }
+
+  @Override
+  public BeanRepository config(Consumer<BeanRepositoryConfig> config) {
+    config.accept(this.config);
     return this;
   }
 
@@ -65,20 +77,48 @@ public class BeanRepositoryImpl implements BeanRepository {
 
   @Override
   public <T> BeanQuery<T> query(Class<T> beanClass) {
-    if (autoRegister && (queried.put(beanClass, null) == null)) {
-      uncatch(() -> register(beanClass));
+    if (config.autoRegister && (scaned.put(beanClass, this) == null)) {
+      uncatch(() -> scan(beanClass));
     }
     return new Query<>(beanClass);
   }
 
   @Override
-  public <T> void scan(Class<T> clz) {
-
+  public BeanRepository scan(Class<?> clz) {
+    debug("Scan beans from Class: " + clz);
+    scanBean(clz);
+    return this;
   }
 
   @Override
-  public <T> void scan(String... packages) {
+  public BeanRepository scan(String... packages) {
+    debug("Scan beans from Packages: " + Arrays.toString(packages));
+    Flowable.fromArray(packages)
+        .flatMap(p -> Flowable.fromIterable(config.classpaths).flatMap(cp -> cp.scan(p)))
+        .forEach(c -> scanBean(c));
+    return this;
+  }
 
+  private void scanBean(Class<?> clz) {
+    if (scaned.put(clz, this) != null) {
+      return;
+    }
+    Bean bean = clz.getAnnotation(Bean.class);
+    if (bean != null) {
+      register(clz);
+    }
+    Scan scan = clz.getAnnotation(Scan.class);
+    if (scan != null) {
+      // TODO fields and methods
+      Set<String> packages = new LinkedHashSet<>();
+      if (scan.autoScanCurrentPackage()) {
+        packages.add(clz.getPackage().getName());
+      }
+      Arrays.stream(scan.packages()).forEach(packages::add);
+      Arrays.stream(scan.typeSafePackages()).forEach(c -> packages.add(c.getPackage().getName()));
+      Arrays.stream(scan.classes()).forEach(this::scan);
+      scan(packages.stream().toArray(String[]::new));
+    }
   }
 
   private class Register<T> implements BeanRegister<T> {
@@ -116,6 +156,7 @@ public class BeanRepositoryImpl implements BeanRepository {
       BeanFactory<T> factory = new ClassBeanFactory<>(clz, scope, qualifier);
       autoImpl(factory, clz);
       addToRepository(factory);
+      debug("Register bean from class: " + clz);
     }
 
     @Override
@@ -123,6 +164,7 @@ public class BeanRepositoryImpl implements BeanRepository {
       BeanFactory<T> factory = new FieldBeanFactory<>(field, scope, qualifier);
       autoImpl(factory, field);
       addToRepository(factory);
+      debug("Register bean from field: " + field);
     }
 
     @Override
@@ -130,6 +172,7 @@ public class BeanRepositoryImpl implements BeanRepository {
       BeanFactory<T> factory = new MethodBeanFactory<>(method, scope, qualifier);
       autoImpl(factory, method);
       addToRepository(factory);
+      debug("Register bean from method: " + method);
     }
 
     @Override
