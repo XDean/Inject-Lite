@@ -7,6 +7,8 @@ import xdean.inject.annotation.Scan;
 
 public interface BeanRepository {
 
+  BeanRepository autoRegister(boolean auto);
+
   <T> BeanRegister<T> register();
 
   <T> BeanQuery<T> query(Class<T> beanClass);

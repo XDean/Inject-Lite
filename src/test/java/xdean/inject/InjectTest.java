@@ -22,8 +22,6 @@ public class InjectTest {
     repo = new BeanRepositoryImpl();
     repo.register(ServiceImpl.class);
     repo.register(IdGenerator.class);
-    repo.register(Manager.class);
-    repo.register(User.class);
   }
 
   @Test

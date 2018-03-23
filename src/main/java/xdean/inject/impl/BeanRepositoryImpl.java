@@ -1,13 +1,15 @@
 package xdean.inject.impl;
 
+import static xdean.jex.util.lang.ExceptionUtil.uncatch;
+
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -30,15 +32,15 @@ public class BeanRepositoryImpl implements BeanRepository {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private class BeanFactories {
-    Map<Class/* <T> */, List/* <BeanFactory<? extends T>> */> factories = new WeakHashMap<>();
+    Map<Class/* <T> */, Set/* <BeanFactory<? extends T>> */> factoryMap = new WeakHashMap<>();
     Map<BeanFactory/* <T> */, Provider/* <T> */> providers = new WeakHashMap<>();
 
-    <T> List<BeanFactory<? extends T>> getFactory(Class<T> beanClass) {
-      return Collections.unmodifiableList(factories.getOrDefault(beanClass, Collections.emptyList()));
+    <T> Collection<BeanFactory<? extends T>> getFactory(Class<T> beanClass) {
+      return Collections.unmodifiableCollection(factoryMap.getOrDefault(beanClass, Collections.emptySet()));
     }
 
     <T> void addFactory(Class<T> beanClass, BeanFactory<? extends T> factory) {
-      factories.computeIfAbsent(beanClass, k -> new LinkedList<>()).add(factory);
+      factoryMap.computeIfAbsent(beanClass, k -> new LinkedHashSet<>()).add(factory);
     }
 
     <T> Provider<T> getProvider(BeanFactory<T> factory) {
@@ -46,7 +48,15 @@ public class BeanRepositoryImpl implements BeanRepository {
     }
   }
 
+  private final Map<Class<?>, ?> queried = new WeakHashMap<>();
   private final BeanFactories factories = new BeanFactories();
+  private boolean autoRegister = true;
+
+  @Override
+  public BeanRepository autoRegister(boolean auto) {
+    autoRegister = auto;
+    return this;
+  }
 
   @Override
   public <T> BeanRegister<T> register() {
@@ -55,6 +65,9 @@ public class BeanRepositoryImpl implements BeanRepository {
 
   @Override
   public <T> BeanQuery<T> query(Class<T> beanClass) {
+    if (autoRegister && (queried.put(beanClass, null) == null)) {
+      uncatch(() -> register(beanClass));
+    }
     return new Query<>(beanClass);
   }
 

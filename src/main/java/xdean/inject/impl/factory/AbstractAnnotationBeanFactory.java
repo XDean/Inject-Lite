@@ -1,6 +1,7 @@
 package xdean.inject.impl.factory;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.Objects;
 
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
@@ -32,5 +33,18 @@ public abstract class AbstractAnnotationBeanFactory<A extends AnnotatedElement, 
   @Override
   public Object getIdentifier() {
     return element;
+  }
+
+  @Override
+  public int hashCode() {
+    return getIdentifier().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof BeanFactory) {
+      return Objects.equals(getIdentifier(), ((BeanFactory<?>) obj).getIdentifier());
+    }
+    return false;
   }
 }

@@ -22,6 +22,12 @@ public interface BeanFactory<T> {
 
   Object getIdentifier();
 
+  @Override
+  int hashCode();
+
+  @Override
+  boolean equals(Object obj);
+
   default BeanFactory<T> validateImplements(Class<?> beanClass) {
     IllegalDefineException.assertThat(beanClass.isAssignableFrom(getType()),
         String.format("Can't convert %s to %s (%s)", getType(), beanClass, getIdentifier()));
