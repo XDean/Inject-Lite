@@ -22,13 +22,15 @@ public class FieldBeanFactory<T> extends AbstractAnnotationBeanFactory<Field, T>
 
   public FieldBeanFactory(Field element, Scope scope, Qualifier qualifier) throws IllegalDefineException {
     super(element, scope, qualifier);
-    element.setAccessible(true);
+    assertThat(Modifier.isStatic(element.getModifiers()) && Modifier.isFinal(element.getModifiers()),
+        "Bean Field must be static final.");
     Pair<Class<T>, ProviderTransformer<T>> pair = ProviderTransformer.<T> from(element.getGenericType(), Object.class, element);
     type = pair.getLeft();
     providerTransformer = pair.getRight();
     if (providerTransformer == ProviderTransformer.FOR_INSTANCE) {
       assertThat(scope == Scope.UNDEFINED, "Field bean can't define @Scope: " + element);
     }
+    element.setAccessible(true);
   }
 
   @Override
