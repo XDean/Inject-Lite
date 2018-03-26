@@ -76,7 +76,7 @@ public class ClassBeanFactory<T> extends AbstractAnnotationBeanFactory<Class<T>,
   }
 
   @Override
-  public Provider<T> getProvider(BeanRepository repo) {
+  public Provider<T> getProviderActual(BeanRepository repo) {
     return scope.transform(() -> construct(repo));
   }
 

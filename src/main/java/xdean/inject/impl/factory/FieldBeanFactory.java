@@ -39,7 +39,7 @@ public class FieldBeanFactory<T> extends AbstractAnnotationBeanFactory<Field, T>
   }
 
   @Override
-  public Provider<T> getProvider(BeanRepository repo) {
+  public Provider<T> getProviderActual(BeanRepository repo) {
     return providerTransformer.transform(() -> getFieldValue(repo));
   }
 

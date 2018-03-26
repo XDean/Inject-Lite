@@ -3,6 +3,9 @@ package xdean.inject.impl.factory;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Objects;
 
+import javax.inject.Provider;
+
+import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
 import xdean.inject.exception.IllegalDefineException;
@@ -34,6 +37,19 @@ public abstract class AbstractAnnotationBeanFactory<A extends AnnotatedElement, 
   public Object getIdentifier() {
     return element;
   }
+
+  @Override
+  public final Provider<T> getProvider(BeanRepository repo) {
+    return () -> {
+      Provider<T> p = getProviderActual(repo);
+      BeanFactoryContext.push(this);
+      T v = p.get();
+      BeanFactoryContext.pop(this);
+      return v;
+    };
+  }
+
+  protected abstract Provider<T> getProviderActual(BeanRepository repo);
 
   @Override
   public int hashCode() {

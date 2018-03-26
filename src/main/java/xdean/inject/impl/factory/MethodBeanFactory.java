@@ -36,7 +36,7 @@ public class MethodBeanFactory<T> extends AbstractAnnotationBeanFactory<Method, 
   }
 
   @Override
-  public Provider<T> getProvider(BeanRepository repo) {
+  public Provider<T> getProviderActual(BeanRepository repo) {
     return scope.transform(providerTransformer.transform(() -> getMethodValue(repo)));
   }
 
