@@ -1,4 +1,4 @@
-package xdean.inject.model;
+package xdean.inject.normal.model;
 
 import xdean.inject.annotation.Bean;
 
