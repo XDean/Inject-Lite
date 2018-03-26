@@ -1,6 +1,7 @@
 package xdean.inject;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ public class CycleRefTest extends InjectTest {
     System.out.println(repo.getBean(A.class));
   }
 
+  @Singleton
   @Bean
   @Data
   public static class A {
@@ -23,6 +25,7 @@ public class CycleRefTest extends InjectTest {
     B b;
   }
 
+  @Singleton
   @Bean
   @Data
   public static class B {

@@ -40,8 +40,8 @@ public abstract class AbstractAnnotationBeanFactory<A extends AnnotatedElement, 
 
   @Override
   public final Provider<T> getProvider(BeanRepository repo) {
+    Provider<T> p = getProviderActual(repo);
     return () -> {
-      Provider<T> p = getProviderActual(repo);
       BeanFactoryContext.push(this);
       T v = p.get();
       BeanFactoryContext.pop(this);
