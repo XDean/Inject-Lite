@@ -17,11 +17,17 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface Scan {
-  String[] packages() default {};
+  public @interface Package {
+    String name() default "";
 
-  Class<?>[] typeSafePackages() default {};
+    Class<?> type() default void.class;
+
+    boolean inherit() default false;
+  }
+
+  Package[] packages() default {};
 
   Class<?>[] classes() default {};
 
-  boolean autoScanCurrentPackage() default true;
+  boolean currentPackage() default true;
 }

@@ -30,7 +30,7 @@ public interface BeanRepository {
   /**
    * Scan the package to register all potential beans and configuration.
    */
-  BeanRepository scan(String... packages);
+  BeanRepository scan(boolean inherit, String... packages);
 
   /**
    * Register a bean class

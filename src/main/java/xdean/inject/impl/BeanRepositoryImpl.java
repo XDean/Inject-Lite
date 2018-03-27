@@ -92,10 +92,10 @@ public class BeanRepositoryImpl implements BeanRepository, Logable {
   }
 
   @Override
-  public BeanRepository scan(String... packages) {
+  public BeanRepository scan(boolean inherit, String... packages) {
     debug("Scan beans from Packages: " + Arrays.toString(packages));
     Flowable.fromArray(packages)
-        .flatMap(p -> Flowable.fromIterable(config.classpaths).flatMap(cp -> cp.scan(p)))
+        .flatMap(p -> Flowable.fromIterable(config.classpaths).flatMap(cp -> cp.scan(p, inherit)))
         .forEach(c -> scanBean(c));
     return this;
   }
@@ -115,14 +115,20 @@ public class BeanRepositoryImpl implements BeanRepository, Logable {
           .filter(f -> f.isAnnotationPresent(Bean.class))
           .forEach(f -> register().from(f));
 
-      Set<String> packages = new LinkedHashSet<>();
-      if (scan.autoScanCurrentPackage()) {
-        packages.add(clz.getPackage().getName());
+      if (scan.currentPackage()) {
+        scan(false, clz.getPackage().getName());
       }
-      Arrays.stream(scan.packages()).forEach(packages::add);
-      Arrays.stream(scan.typeSafePackages()).forEach(c -> packages.add(c.getPackage().getName()));
+      Arrays.stream(scan.packages()).forEach(p -> {
+        Class<?> c = p.type();
+        String name;
+        if (c != void.class) {
+          name = c.getPackage().getName();
+        } else {
+          name = p.name();
+        }
+        scan(p.inherit(), name);
+      });
       Arrays.stream(scan.classes()).forEach(this::scan);
-      scan(packages.stream().toArray(String[]::new));
     }
   }
 

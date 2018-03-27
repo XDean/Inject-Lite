@@ -8,11 +8,11 @@ import org.junit.Test;
 
 import xdean.inject.InjectTest;
 import xdean.inject.annotation.Scan;
-import xdean.inject.sample.model.Service;
+import xdean.inject.annotation.Scan.Package;
 import xdean.inject.sample.model.User;
 import xdean.inject.sample.model.impl.ServiceImpl;
 
-@Scan(typeSafePackages = { Service.class, ServiceImpl.class })
+@Scan(packages = @Package(type = SampleTest.class, inherit = true))
 public class SampleTest extends InjectTest {
   @Test
   public void test(User user) throws Exception {
