@@ -15,8 +15,7 @@ import xdean.inject.normal.model.impl.ServiceImpl;
 @Scan(typeSafePackages = { Service.class, ServiceImpl.class })
 public class NormalTest extends InjectTest {
   @Test
-  public void test() throws Exception {
-    User user = repo.query(User.class).get().get();
+  public void test(User user) throws Exception {
     assertNotNull(user);
     assertNotNull(user.getService());
     assertTrue(user.getService() instanceof ServiceImpl);

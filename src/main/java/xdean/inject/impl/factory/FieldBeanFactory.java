@@ -10,7 +10,6 @@ import xdean.inject.BeanProvider;
 import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
-import xdean.inject.exception.BeanNotFoundException;
 import xdean.inject.exception.IllegalDefineException;
 import xdean.jex.extra.collection.Pair;
 
@@ -39,16 +38,10 @@ public class FieldBeanFactory<T> extends AbstractAnnotationBeanFactory<Field, T>
 
   @Override
   public BeanProvider<T> getProviderActual(BeanRepository repo) {
-    return BeanProvider.create(providerTransformer.transform(() -> getFieldValue(repo)));
+    return Scope.SINGLETON.transform(BeanProvider.create(providerTransformer.transform(() -> getFieldValue(repo))));
   }
 
   private Object getFieldValue(BeanRepository repo) {
-    if (Modifier.isStatic(element.getModifiers())) {
-      return uncheck(() -> element.get(null));
-    } else {
-      Class<?> declaringClass = element.getDeclaringClass();
-      Object owner = repo.getBean(declaringClass).orElseThrow(() -> new BeanNotFoundException(repo, declaringClass));
-      return uncheck(() -> element.get(owner));
-    }
+    return uncheck(() -> element.get(null));
   }
 }

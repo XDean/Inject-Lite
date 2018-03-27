@@ -7,6 +7,12 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Scan the packages and the class's fields and methods for potential beans.
+ *
+ * @author Dean Xu (XDean@github.com)
+ *
+ */
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)

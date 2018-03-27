@@ -32,6 +32,7 @@ import xdean.inject.impl.factory.ClassBeanFactory;
 import xdean.inject.impl.factory.FieldBeanFactory;
 import xdean.inject.impl.factory.MethodBeanFactory;
 import xdean.jex.log.Logable;
+import xdean.jex.util.reflect.ReflectUtil;
 
 public class BeanRepositoryImpl implements BeanRepository, Logable {
 
@@ -110,6 +111,10 @@ public class BeanRepositoryImpl implements BeanRepository, Logable {
     Scan scan = clz.getAnnotation(Scan.class);
     if (scan != null) {
       // TODO fields and methods
+      Arrays.stream(ReflectUtil.getAllFields(clz, true))
+          .filter(f -> f.isAnnotationPresent(Bean.class))
+          .forEach(f -> register().from(f));
+
       Set<String> packages = new LinkedHashSet<>();
       if (scan.autoScanCurrentPackage()) {
         packages.add(clz.getPackage().getName());
