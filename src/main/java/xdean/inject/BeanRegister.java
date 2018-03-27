@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import javax.inject.Provider;
-
 import xdean.inject.exception.IllegalDefineException;
 
 /**
@@ -31,11 +29,6 @@ public interface BeanRegister<T> {
    * Register bean from the method
    */
   void from(Method method) throws IllegalDefineException;
-
-  /**
-   * Register bean from the provider
-   */
-  void from(Provider<T> provider) throws IllegalDefineException;
 
   /**
    * Register as the beanClass's implementation.

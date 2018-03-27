@@ -181,11 +181,6 @@ public class BeanRepositoryImpl implements BeanRepository, Logable {
     }
 
     @Override
-    public void from(Provider<T> provider) throws IllegalDefineException {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
     public BeanRegister<T> implementsFor(Class<? super T> clz) {
       beanClasses.add(clz);
       return this;
