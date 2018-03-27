@@ -1,4 +1,4 @@
-package xdean.inject.normal;
+package xdean.inject.sample;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -8,12 +8,12 @@ import org.junit.Test;
 
 import xdean.inject.InjectTest;
 import xdean.inject.annotation.Scan;
-import xdean.inject.normal.model.Service;
-import xdean.inject.normal.model.User;
-import xdean.inject.normal.model.impl.ServiceImpl;
+import xdean.inject.sample.model.Service;
+import xdean.inject.sample.model.User;
+import xdean.inject.sample.model.impl.ServiceImpl;
 
 @Scan(typeSafePackages = { Service.class, ServiceImpl.class })
-public class NormalTest extends InjectTest {
+public class SampleTest extends InjectTest {
   @Test
   public void test(User user) throws Exception {
     assertNotNull(user);

@@ -1,4 +1,4 @@
-package xdean.inject.normal.model;
+package xdean.inject.sample.model;
 
 import java.util.function.IntSupplier;
 
