@@ -5,11 +5,11 @@ import java.util.Optional;
 import javax.inject.Provider;
 
 public interface BeanQuery<T> {
-  default Optional<? extends T> get() {
+  default Optional<T> get() {
     return getProvider().map(p -> p.get());
   }
 
-  Optional<Provider<? extends T>> getProvider();
+  Optional<Provider<T>> getProvider();
 
   default BeanQuery<T> named(String name) {
     return qualifies(Qualifier.named(name));

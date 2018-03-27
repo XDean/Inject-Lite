@@ -40,7 +40,7 @@ public class BeanRepositoryImpl implements BeanRepository, Logable {
     Map<Class/* <T> */, Set/* <BeanFactory<? extends T>> */> factoryMap = new WeakHashMap<>();
     Map<BeanFactory/* <T> */, Provider/* <T> */> providers = new WeakHashMap<>();
 
-    <T> Collection<BeanFactory<? extends T>> getFactory(Class<T> beanClass) {
+    <T> Collection<BeanFactory<T>> getFactory(Class<T> beanClass) {
       return Collections.unmodifiableCollection(factoryMap.getOrDefault(beanClass, Collections.emptySet()));
     }
 
@@ -208,12 +208,12 @@ public class BeanRepositoryImpl implements BeanRepository, Logable {
     }
 
     @Override
-    public Optional<Provider<? extends T>> getProvider() {
+    public Optional<Provider<T>> getProvider() {
       return factories.getFactory(clz)
           .stream()
           .filter(f -> f.getQualifier().match(qualifier))
           .findFirst()
-          .<Provider<? extends T>> map(f -> factories.getProvider(f));
+          .<Provider<T>> map(f -> factories.getProvider(f));
     }
 
     @Override

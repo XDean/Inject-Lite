@@ -26,10 +26,11 @@ public class BeanFactoryContext {
       throw new IllegalStateException("Cyclical dependency happens: " +
           Observable.fromIterable(stack)
               .map(p -> p.getLeft())
-              .skipWhile(e -> !e.equals(bf))
+              .takeWhile(e -> !e.equals(bf))
+              .startWith(bf)
               .concatWith(Observable.just(bf))
               .map(b -> b.getIdentifier())
-              .reduce((a, b) -> a + " -> " + b)
+              .reduce((a, b) -> a + " <- " + b)
               .blockingGet());
     }
     stack.push(Pair.of(bf, o));
