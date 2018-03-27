@@ -1,8 +1,11 @@
 package xdean.inject;
 
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import com.google.common.base.MoreObjects;
@@ -16,9 +19,7 @@ import xdean.inject.annotation.Scan;
 public class CycleRefTest extends InjectTest {
 
   @Test
-  public void testResolve() throws Exception {
-    A a = repo.getBean(A.class).get();
-    B b = repo.getBean(B.class).get();
+  public void testResolve(A a, B b) throws Exception {
     assertSame(a, a.b.a);
     assertSame(a, b.a);
     assertSame(a.b, b.a.b);
