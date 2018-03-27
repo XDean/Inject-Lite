@@ -6,8 +6,7 @@ import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import javax.inject.Provider;
-
+import xdean.inject.BeanProvider;
 import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
@@ -39,8 +38,8 @@ public class FieldBeanFactory<T> extends AbstractAnnotationBeanFactory<Field, T>
   }
 
   @Override
-  public Provider<T> getProviderActual(BeanRepository repo) {
-    return providerTransformer.transform(() -> getFieldValue(repo));
+  public BeanProvider<T> getProviderActual(BeanRepository repo) {
+    return BeanProvider.create(providerTransformer.transform(() -> getFieldValue(repo)));
   }
 
   private Object getFieldValue(BeanRepository repo) {

@@ -3,8 +3,7 @@ package xdean.inject.impl.factory;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Objects;
 
-import javax.inject.Provider;
-
+import xdean.inject.BeanProvider;
 import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
@@ -39,17 +38,22 @@ public abstract class AbstractAnnotationBeanFactory<A extends AnnotatedElement, 
   }
 
   @Override
-  public final Provider<T> getProvider(BeanRepository repo) {
-    Provider<T> p = getProviderActual(repo);
-    return () -> {
-      BeanFactoryContext.push(this);
-      T v = p.get();
+  public final BeanProvider<T> getProvider(BeanRepository repo) {
+    BeanProvider<T> p = getProviderActual(repo);
+    return BeanProvider.create(() -> {
+      T t = BeanFactoryContext.push(this, null);
+      if (t == null) {
+        t = p.construct();
+        BeanFactoryContext.pop(this);
+        BeanFactoryContext.push(this, t);
+        p.init(t);
+      }
       BeanFactoryContext.pop(this);
-      return v;
-    };
+      return t;
+    });
   }
 
-  protected abstract Provider<T> getProviderActual(BeanRepository repo);
+  protected abstract BeanProvider<T> getProviderActual(BeanRepository repo);
 
   @Override
   public int hashCode() {

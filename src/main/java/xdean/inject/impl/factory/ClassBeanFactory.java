@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
+import xdean.inject.BeanProvider;
 import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
@@ -76,8 +76,8 @@ public class ClassBeanFactory<T> extends AbstractAnnotationBeanFactory<Class<T>,
   }
 
   @Override
-  public Provider<T> getProviderActual(BeanRepository repo) {
-    return scope.transform(() -> construct(repo));
+  public BeanProvider<T> getProviderActual(BeanRepository repo) {
+    return scope.transform(() -> construct(repo), obj -> init(repo, obj));
   }
 
   @SuppressWarnings("unchecked")
@@ -121,6 +121,10 @@ public class ClassBeanFactory<T> extends AbstractAnnotationBeanFactory<Class<T>,
     } catch (InvocationTargetException e) {
       throw new InjectException("Error happened when construct bean: " + element, e.getTargetException());
     }
+    return obj;
+  }
+
+  private void init(BeanRepository repo, T obj) {
     fields.forEach(f -> {
       Object value = repo.query(f.getType()).qualifies(Qualifier.from(f)).get().orElseThrow(notFound(repo, f.getType()));
       try {
@@ -139,6 +143,5 @@ public class ClassBeanFactory<T> extends AbstractAnnotationBeanFactory<Class<T>,
         throw new InjectException("Error happended when invoke inject method: " + m, e.getTargetException());
       }
     });
-    return obj;
   }
 }

@@ -2,6 +2,7 @@ package xdean.inject.impl.factory;
 
 import javax.inject.Provider;
 
+import xdean.inject.BeanProvider;
 import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
@@ -36,8 +37,8 @@ public class ProviderBeanFactory<T> implements BeanFactory<T> {
   }
 
   @Override
-  public Provider<T> getProvider(BeanRepository repo) {
-    return provider;
+  public BeanProvider<T> getProvider(BeanRepository repo) {
+    return BeanProvider.create(provider);
   }
 
   @Override

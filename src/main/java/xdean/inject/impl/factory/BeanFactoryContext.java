@@ -1,36 +1,45 @@
 package xdean.inject.impl.factory;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Objects;
+import java.util.Optional;
 
 import io.reactivex.Observable;
 import xdean.inject.impl.BeanFactory;
+import xdean.jex.extra.collection.Pair;
 
+@SuppressWarnings("rawtypes")
 public class BeanFactoryContext {
-  private static final ThreadLocal<Stack<BeanFactory<?>>> FACTORIES = new ThreadLocal<Stack<BeanFactory<?>>>() {
+  private static final ThreadLocal<Deque<Pair<BeanFactory, Object>>> FACTORIES = new ThreadLocal<Deque<Pair<BeanFactory, Object>>>() {
     @Override
-    protected Stack<BeanFactory<?>> initialValue() {
-      return new Stack<>();
+    protected Deque<Pair<BeanFactory, Object>> initialValue() {
+      return new ArrayDeque<>();
     };
   };
 
-  public static void push(BeanFactory<?> bf) {
-    Stack<BeanFactory<?>> stack = FACTORIES.get();
-    if (stack.contains(bf)) {
+  @SuppressWarnings("unchecked")
+  public static <T> T push(BeanFactory<T> bf, T o) {
+    Deque<Pair<BeanFactory, Object>> stack = FACTORIES.get();
+    Optional<Pair<BeanFactory, Object>> find = stack.stream().filter(p -> Objects.equals(p.getLeft(), bf)).findFirst();
+    if (find.isPresent() && find.get().getRight() == null) {
       throw new IllegalStateException("Cyclical dependency happens: " +
           Observable.fromIterable(stack)
+              .map(p -> p.getLeft())
               .skipWhile(e -> !e.equals(bf))
               .concatWith(Observable.just(bf))
               .map(b -> b.getIdentifier())
               .reduce((a, b) -> a + " -> " + b)
               .blockingGet());
     }
-    stack.push(bf);
+    stack.push(Pair.of(bf, o));
+    return (T) find.map(p -> p.getRight()).orElse(null);
   }
 
   public static void pop(BeanFactory<?> bf) {
-    BeanFactory<?> pop = FACTORIES.get().pop();
-    if (pop != bf) {
-      throw new IllegalStateException("Except pop: " + bf + ", but was: " + pop);
+    Pair<BeanFactory, Object> pop = FACTORIES.get().pop();
+    if (pop.getLeft() != bf) {
+      throw new IllegalStateException("Except pop: " + bf + ", but was: " + pop.getLeft());
     }
   }
 }

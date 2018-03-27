@@ -6,8 +6,7 @@ import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import javax.inject.Provider;
-
+import xdean.inject.BeanProvider;
 import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
@@ -36,8 +35,8 @@ public class MethodBeanFactory<T> extends AbstractAnnotationBeanFactory<Method, 
   }
 
   @Override
-  public Provider<T> getProviderActual(BeanRepository repo) {
-    return scope.transform(providerTransformer.transform(() -> getMethodValue(repo)));
+  public BeanProvider<T> getProviderActual(BeanRepository repo) {
+    return scope.transform(BeanProvider.create(providerTransformer.transform(() -> getMethodValue(repo))));
   }
 
   private Object getMethodValue(BeanRepository repo) {

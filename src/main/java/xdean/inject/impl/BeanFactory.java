@@ -1,7 +1,6 @@
 package xdean.inject.impl;
 
-import javax.inject.Provider;
-
+import xdean.inject.BeanProvider;
 import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
@@ -14,7 +13,7 @@ public interface BeanFactory<T> {
 
   Class<T> getType();
 
-  Provider<T> getProvider(BeanRepository repo);
+  BeanProvider<T> getProvider(BeanRepository repo);
 
   default T get(BeanRepository repo) {
     return getProvider(repo).get();

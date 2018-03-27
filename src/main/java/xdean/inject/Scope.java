@@ -3,13 +3,14 @@ package xdean.inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import xdean.inject.annotation.ScopeHandler;
 import xdean.inject.exception.IllegalDefineException;
-import xdean.jex.extra.LazyValue;
 import xdean.jex.extra.tryto.Try;
 
 public interface Scope {
@@ -20,8 +21,30 @@ public interface Scope {
   };
   Scope SINGLETON = new Scope() {
     @Override
-    public <T> Provider<T> transform(Provider<T> provider) {
-      return LazyValue.create(provider::get)::get;
+    public <T> BeanProvider<T> transform(BeanProvider<T> provider) {
+      return new BeanProvider<T>() {
+        T t = null;
+        AtomicBoolean init = new AtomicBoolean(false);
+
+        @Override
+        public T construct() {
+          if (t == null) {
+            synchronized (this) {
+              if (t == null) {
+                t = provider.construct();
+              }
+            }
+          }
+          return t;
+        }
+
+        @Override
+        public void init(T t) {
+          if (init.compareAndSet(false, true)) {
+            provider.init(t);
+          }
+        }
+      };
     }
   };
 
@@ -29,8 +52,12 @@ public interface Scope {
     return true;
   }
 
-  default <T> Provider<T> transform(Provider<T> provider) {
+  default <T> BeanProvider<T> transform(BeanProvider<T> provider) {
     return provider;
+  }
+
+  default <T> BeanProvider<T> transform(Provider<T> constructor, Consumer<T> initer) {
+    return transform(BeanProvider.create(constructor, initer));
   }
 
   static Scope from(AnnotatedElement ae) throws IllegalDefineException {
