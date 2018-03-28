@@ -23,6 +23,7 @@ import xdean.inject.Qualifier;
 import xdean.inject.Scope;
 import xdean.inject.exception.IllegalDefineException;
 import xdean.inject.exception.InjectException;
+import xdean.inject.impl.Util;
 import xdean.jex.extra.tryto.Try;
 import xdean.jex.util.reflect.ReflectUtil;
 
@@ -104,9 +105,10 @@ public class ClassBeanFactory<T> extends AbstractAnnotationBeanFactory<Class<T>,
   }
 
   private List<Method> initMethods() throws IllegalDefineException {
-    return Util.getTopInstanceMethods(element)
+    return Util.getTopMethods(element)
         .stream()
         .filter(m -> m.isAnnotationPresent(Inject.class))
+        .map(m -> assertNot(m, Modifier.isStatic(m.getModifiers()), "@Inject method can't be static"))
         .map(function(f -> f.setAccessible(true)))
         .collect(Collectors.toList());
   }

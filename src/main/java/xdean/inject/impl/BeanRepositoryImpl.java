@@ -100,19 +100,19 @@ public class BeanRepositoryImpl implements BeanRepository, Logable {
     return this;
   }
 
-  private void scanBean(Class<?> clz) {
+  private <T> void scanBean(Class<T> clz) {
     if (scaned.put(clz, this) != null) {
       return;
     }
-    Bean bean = clz.getAnnotation(Bean.class);
-    if (bean != null) {
-      register(clz);
-    }
+    uncatch(() -> register(clz));
     Scan scan = clz.getAnnotation(Scan.class);
     if (scan != null) {
-      // TODO fields and methods
       Arrays.stream(ReflectUtil.getAllFields(clz, true))
           .filter(f -> f.isAnnotationPresent(Bean.class))
+          .forEach(f -> register().from(f));
+      Util.getTopMethods(clz)
+          .stream()
+          .filter(m -> m.isAnnotationPresent(Bean.class))
           .forEach(f -> register().from(f));
 
       if (scan.currentPackage()) {

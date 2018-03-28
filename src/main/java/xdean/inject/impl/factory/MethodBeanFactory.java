@@ -11,6 +11,7 @@ import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 import xdean.inject.Scope;
 import xdean.inject.exception.IllegalDefineException;
+import xdean.inject.impl.Util;
 import xdean.jex.extra.collection.Pair;
 
 public class MethodBeanFactory<T> extends AbstractAnnotationBeanFactory<Method, T> {

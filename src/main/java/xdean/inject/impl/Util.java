@@ -1,12 +1,12 @@
-package xdean.inject.impl.factory;
+package xdean.inject.impl;
 
 import static xdean.inject.exception.BeanNotFoundException.notFound;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 import xdean.inject.BeanRepository;
 import xdean.inject.Qualifier;
 
-class Util {
+public class Util {
 
-  static Error never(Throwable e) {
+  public static Error never(Throwable e) {
     return new Error("This never happen. Contact author.", e);
   }
 
-  static Object[] prepareArgument(Executable element, BeanRepository repo) {
+  public static Object[] prepareArgument(Executable element, BeanRepository repo) {
     Parameter[] parameters = element.getParameters();
     Object[] params = new Object[element.getParameterCount()];
     for (int i = 0; i < params.length; i++) {
@@ -35,14 +35,13 @@ class Util {
   /**
    * Get all top instance methods. Following methods are ignored
    * <ul>
-   * <li>Static method</li>
    * <li>Overridden method</li>
    * <li>Bridge method</li>
    * <li>Synthetic method</li>
    * </ul>
    */
-  static List<Method> getTopInstanceMethods(Class<?> clz) {
-    List<Method> result = new LinkedList<>();
+  public static List<Method> getTopMethods(Class<?> clz) {
+    List<Method> result = new ArrayList<>();
     Class<?> c = clz;
     do {
       result.addAll(Arrays.stream(c.getDeclaredMethods())

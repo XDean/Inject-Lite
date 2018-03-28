@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import xdean.inject.annotation.Scan;
 import xdean.inject.annotation.ScopeHandler;
 import xdean.inject.exception.IllegalDefineException;
 import xdean.jex.extra.tryto.Try;
@@ -68,7 +69,7 @@ public interface Scope {
     }
     Annotation scopeAnno = scopes.get(0);
     Class<? extends Annotation> annoType = scopeAnno.annotationType();
-    if (annoType == Singleton.class) {
+    if (annoType == Singleton.class || annoType == Scan.class) {
       return SINGLETON;
     }
     ScopeHandler scopeHandler = IllegalDefineException.assertNonNull(annoType.getAnnotation(ScopeHandler.class),

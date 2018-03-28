@@ -1,15 +1,16 @@
-package xdean.inject.impl.factory;
+package xdean.inject.impl;
 
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
 
 import io.reactivex.Observable;
+import xdean.inject.impl.Util;
 
 public class UtilTest {
   @Test
   public void testGetTopMethod() throws Exception {
-    Observable.fromIterable(Util.getTopInstanceMethods(B.class))
+    Observable.fromIterable(Util.getTopMethods(B.class))
         .filter(m -> m.getDeclaringClass() != Object.class)
         .test()
         .assertValueCount(3)

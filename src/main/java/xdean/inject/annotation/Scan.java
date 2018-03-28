@@ -7,12 +7,15 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.inject.Scope;
+
 /**
  * Scan the packages and the class's fields and methods for potential beans.
  *
  * @author Dean Xu (XDean@github.com)
  *
  */
+@Scope
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)

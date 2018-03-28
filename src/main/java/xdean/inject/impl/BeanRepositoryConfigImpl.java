@@ -9,7 +9,7 @@ import xdean.inject.impl.classpath.SystemClassPath;
 
 public class BeanRepositoryConfigImpl implements BeanRepositoryConfig {
 
-  boolean autoRegister = false;
+  boolean autoRegister = true;
   List<ClassPath> classpaths = new ArrayList<>();
 
   public BeanRepositoryConfigImpl() {
